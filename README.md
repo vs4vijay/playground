@@ -12,6 +12,9 @@ https://github.com/pankod/refine
 npx superplate-cli --preset refine-antd refine
 npm run
 
+
+npx create-remix
+
 ```
 
 ## Dev Notes

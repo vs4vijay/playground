@@ -42,6 +42,12 @@ https://github.com/feiskyer/kubernetes-handbook
 
 https://directus.io/
 
+https://postgrest.org/en/stable/
 
+https://github.com/jorisvink/kore
+
+https://github.com/gurugio/lowlevelprogramming-university
+
+https://cppbyexample.com/
 
 ```

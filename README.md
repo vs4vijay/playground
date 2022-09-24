@@ -21,7 +21,6 @@ npx create-remix
 
 ```shell
 
-https://github.com/encoredev/encore
 
 NodeJS
 https://github.com/w3tecch/express-typescript-boilerplate
@@ -40,7 +39,15 @@ https://github.com/feiskyer/kubernetes-handbook
 
 ---
 
+AppSmith
+
+https://effector.dev/
+
+https://github.com/encoredev/encore
+
 https://directus.io/
+
+https://github.com/backstage/backstage
 
 https://postgrest.org/en/stable/
 

@@ -1,0 +1,25 @@
+
+version: '3'
+
+services:
+
+    redis:
+        image: redis:latest
+        ports:
+            - "6379:6379"
+        networks:
+            - dev
+        container_name: redis
+
+    arena:
+        image: mixmaxhq/arena
+        ports:
+        - "4567:4567"
+        networks:
+        - dev
+        volumes:
+        - ./arena-index.json:/opt/arena/index.json
+        container_name: arena
+
+networks:
+    dev:

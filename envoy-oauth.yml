@@ -1,0 +1,134 @@
+static_resources:
+
+  listeners:
+  - name: oauth_test
+    address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 11001
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: ingress_http
+          codec_type: AUTO
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains:
+              - "*"
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  host_rewrite_literal: 0.0.0.0
+                  cluster: blackhole_server
+          http_filters:
+          - name: envoy.filters.http.jwt_authn
+            typed_config:
+              "@type": "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication"
+              providers:
+                jwt_auth:
+                  local_jwks:
+                    inline_string: '{"keys":[{"typ": "JWT", "kty":"oct","alg":"HS256","kid":"NDA0ODM0NTU4RDNDQjZDNEE2RDM2Nzg4MEY4NjE0NjFDNUU4QzA0Nw","k":"dmlqYXlzb25p"}]}'
+                  forward: true
+                  from_headers:
+                  - name: Authorization
+                    value_prefix: "Bearer "
+                  payload_in_metadata: jwt_payload
+              rules:
+              - match:
+                  prefix: "/"
+                requires:
+                  provider_name: jwt_auth
+          - name: envoy.filters.http.lua
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+              inline_code: |
+                function envoy_on_request(request_handle)
+                  local headers = request_handle:headers()
+                  local meta = request_handle:streamInfo():dynamicMetadata()
+                  for key, value in pairs(meta) do
+                    headers:add("user-id", value.jwt_payload.userId)
+                    headers:add("client-id", value.jwt_payload.clientId)
+                    
+                    local auth_token = headers:get("authorization")
+                    request_handle:logInfo("-------auth_token------"..auth_token)
+                    
+                    local security_principal = request_handle:base64Escape(value.jwt_payload.principalId)
+                    headers:add("security-principal", security_principal)
+                  end
+                end
+          - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+  - name: listener_0
+    address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 11000
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: ingress_http
+          access_log:
+          - name: envoy.access_loggers.stdout
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+          http_filters:
+          - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/envoy"
+                route:
+                  host_rewrite_literal: www.envoyproxy.io
+                  cluster: service_envoyproxy_io
+
+  clusters:
+  - name: blackhole_server
+    connect_timeout: 5s
+    type: STRICT_DNS  # static
+    load_assignment:
+      cluster_name: blackhole_server
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: host.docker.internal
+                port_value: 9999
+  - name: service_envoyproxy_io
+    type: LOGICAL_DNS
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    load_assignment:
+      cluster_name: service_envoyproxy_io
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: www.envoyproxy.io
+                port_value: 443
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        sni: www.envoyproxy.io
+
+admin:
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 10000

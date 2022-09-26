@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+
+  oracle:
+    image: absolutapps/oracle-12c-ee
+    ports:
+      - '1521:1521'
+      - '5500:5500'
+      - '8081:8080'
+    container_name: oracle
+    volumes:
+      - ./data/oracle:/u01/app/oracle
+
+volumes:
+  db-data:
+
+networks:
+  dev:

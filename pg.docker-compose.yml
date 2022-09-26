@@ -1,0 +1,31 @@
+version: '3.9'
+   
+services:
+
+  postgres:
+    image: postgres:14.1
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data/repdb:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=pg_db
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres012post
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    ports:
+      - '5433:80'
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=vs4vijay@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=postgres012post
+      - PGADMIN_DISABLE_POSTFIX=no
+
+networks:
+  dev:

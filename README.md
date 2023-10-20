@@ -1,19 +1,50 @@
 # playground
 
 
+## NextJS App
+
+```bash
+
+
+pnpm create next-app ts-next-app --template typescript
+
+pnpm create next-app nextjs-typescript-starter --example "https://github.com/vercel/nextjs-postgres-auth-starter"
+
+
+
+```
+
+## Remix App
+
+```bash
+
+npx create-remix
+
+```
+
+
+## Refine App
+
+- https://github.com/pankod/refine
+- https://refine.new/
+
+```bash
+
+npx superplate-cli --preset refine-antd refine
+npm run
+
+pnpm create refine-app@latest -- -o refine
+
+
+
+```
+
 ## Resolve App
 
 ```shell
 
 npx create-resolve-app resolve
 
-
-https://github.com/pankod/refine
-npx superplate-cli --preset refine-antd refine
-npm run
-
-
-npx create-remix
 
 ```
 

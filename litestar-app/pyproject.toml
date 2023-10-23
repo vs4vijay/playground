@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "litestar-app"
+version = "0.1.0"
+description = ""
+authors = ["vs4vijay <vs4vijay@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+litestar = "^2.2.1"
+uvicorn = "^0.23.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

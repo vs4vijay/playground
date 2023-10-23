@@ -41,6 +41,8 @@ pnpm create refine-app@latest -- -o refine
 
 ## Resolve App
 
+- https://reimagined.github.io/resolve/
+
 ```shell
 
 npx create-resolve-app resolve
@@ -70,6 +72,8 @@ https://github.com/feiskyer/kubernetes-handbook
 
 ---
 
+lit component
+
 AppSmith
 
 https://effector.dev/
@@ -89,5 +93,11 @@ https://github.com/gurugio/lowlevelprogramming-university
 https://cppbyexample.com/
 
 windmill
+
+https://github.com/steven-tey/precedent
+
+https://github.com/lucide-icons/lucide
+
+https://docs.radapp.io/getting-started
 
 ```

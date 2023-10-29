@@ -1,8 +1,11 @@
-caddy:
+version: "3"
+
+services:
+  caddy:
     image: caddy:2.6.1-alpine
     container_name: wg-caddy
     restart: unless-stopped
-    command: caddy reverse-proxy --from https://wg.host.com:443 --to http://wg-easy:51821
+    command: caddy reverse-proxy --from https://wick.japaneast.cloudapp.azure.com:443 --to http://wg-easy:51821
     ports:
       - "80:80/tcp"
       - "443:443/tcp"

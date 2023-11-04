@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  home-assistant:
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    container_name: hass
+    ports:
+      - "8123:8123"
+    volumes:
+      - ./hass_config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web
+    external: true

@@ -9,29 +9,29 @@ networks:
 
 services:
   unbound:
-    container_name: unbound
     image: "mvance/unbound:latest"
+    container_name: unbound
     hostname: unbound
-    restart: unless-stopped
     volumes:
       - "./unbound:/opt/unbound/etc/unbound/"
+    cap_add:
+      - NET_ADMIN
     networks:
       private_network:
         ipv4_address: 10.2.0.200
-    cap_add:
-      - NET_ADMIN
+    restart: unless-stopped
 
   wg-easy:
-    container_name: wg-easy
     image: weejewel/wg-easy
+    container_name: wg-easy
     environment:
-      - WG_HOST=wick.japaneast.cloudapp.azure.com
-      - PASSWORD=
-    volumes:
-      - "./wireguard:/etc/wireguard"
+      WG_HOST: "yourdns"
+      PASSWORD: ""
     ports:
       - "51820:51820/udp"
       - "51821:51821/tcp"
+    volumes:
+      - "./wireguard:/etc/wireguard"
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -44,11 +44,10 @@ services:
         ipv4_address: 10.2.0.3
 
   pihole:
-    depends_on: [unbound]
+    image: pihole/pihole:latest
     container_name: pihole
     hostname: pihole
-    image: pihole/pihole:latest
-    restart: unless-stopped
+    depends_on: [unbound]
     dns:
       - 127.0.0.1
       - 10.2.0.200 # Points to unbound
@@ -69,17 +68,18 @@ services:
     networks:
       private_network:
         ipv4_address: 10.2.0.100
-
-  caddy:
-    container_name: wg-caddy
-    image: caddy:2.6.1-alpine
     restart: unless-stopped
-    command: caddy reverse-proxy --from https://wick.japaneast.cloudapp.azure.com:443 --to http://wg-easy:51821
+
+  wg-caddy:
+    image: caddy:2.6.1-alpine
+    container_name: wg-caddy
+    command: caddy reverse-proxy --from https://yourdns:443 --to http://wg-easy:51821
     ports:
       - "80:80/tcp"
       - "443:443/tcp"
     volumes:
-      - ~/.caddy:/data
+      - ~/.caddy_data:/data
     networks:
       private_network:
         ipv4_address: 10.2.0.133
+    restart: unless-stopped

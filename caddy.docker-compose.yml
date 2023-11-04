@@ -1,13 +1,21 @@
-version: "3"
+version: "3.8"
 
 services:
   caddy:
     image: caddy:2.6.1-alpine
-    container_name: wg-caddy
+    container_name: caddy
     restart: unless-stopped
-    command: caddy reverse-proxy --from https://wick.japaneast.cloudapp.azure.com:443 --to http://wg-easy:51821
+    # command: caddy reverse-proxy --from https://yourdns:443 --to http://wg-easy:51821
+    command: caddy reverse-proxy --from :443 --to :6060
     ports:
       - "80:80/tcp"
       - "443:443/tcp"
     volumes:
       - ~/.caddy:/data
+    networks:
+      - web
+
+networks:
+  web:
+    name: web
+    external: true

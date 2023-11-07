@@ -6,7 +6,18 @@ services:
     container_name: caddy
     restart: unless-stopped
     # command: caddy reverse-proxy --from https://yourdns:443 --to http://wg-easy:51821
-    command: caddy reverse-proxy --from :443 --to :6060
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        echo "[+] Creating Caddyfile"
+        tee Caddyfile <<EOF
+          yourdns.duckdns.org:443 {
+            respond "Hey man!"
+          }
+        EOF
+        
+        echo "[+] Running Caddy"
+        caddy run
     ports:
       - "80:80/tcp"
       - "443:443/tcp"

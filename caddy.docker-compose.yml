@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   caddy:
-    image: caddy:2.6.1-alpine
+    image: caddy:2.7.5-alpine
     container_name: caddy
     restart: unless-stopped
     # command: caddy reverse-proxy --from https://yourdns:443 --to http://wg-easy:51821
@@ -11,8 +11,62 @@ services:
       - |
         echo "[+] Creating Caddyfile"
         tee Caddyfile <<EOF
-          yourdns.duckdns.org:443 {
-            respond "Hey man!"
+          {
+            order authenticate before respond
+            order authorize before reverse_proxy
+            
+            security {
+              local identity store localdb {
+                realm local
+                
+                path /etc/caddy/auth/local/users.json
+              }
+          
+              authentication portal myportal {
+                enable identity store localdb
+                cookie domain zzzzzz.duckdns.org
+                cookie lifetime 86400
+
+                transform user {
+                  match email zzzzzz@localdomain.local
+                  action add role authp/user
+                }
+              }
+
+              authorization policy admin_policy {
+                allow roles authp/user
+              }
+            }
+          }
+        
+          zzzzzz.duckdns.org:443 {
+            
+            route /* {
+              respond "root" 200
+            }
+            
+            route /auth* {
+              authenticate with myportal
+            }
+            
+            route /hi* {
+              respond "hi" 200
+            }
+            
+            route /hey* {
+              authorize with admin_policy
+
+              respond "hey" 200
+            }
+            
+            
+            route /portainer* {
+              authorize with admin_policy
+              uri strip_prefix /portainer
+
+              reverse_proxy portainer:9000
+            }
+
           }
         EOF
         

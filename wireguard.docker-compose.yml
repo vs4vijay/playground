@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   wireguard:
-    image: lscr.io/linuxserver/wireguard:latest
+    image: linuxserver/wireguard:latest
     container_name: wireguard
     cap_add:
       - NET_ADMIN
@@ -34,5 +34,7 @@ services:
 networks:
   internal:
     name: internal
+    external: true
   web:
     name: web
+    external: true

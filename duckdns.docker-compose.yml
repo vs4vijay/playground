@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    environment:
+      - SUBDOMAINS=SUBDOMAIN
+      - TOKEN=TOKEN
+    restart: unless-stopped
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: internal
+    external: true

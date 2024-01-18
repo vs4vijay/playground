@@ -5,8 +5,8 @@ services:
     image: lscr.io/linuxserver/duckdns:latest
     container_name: duckdns
     environment:
-      - SUBDOMAINS=SUBDOMAIN
-      - TOKEN=TOKEN
+      - SUBDOMAINS=zzz
+      - TOKEN=zzz
     restart: unless-stopped
     networks:
       - internal

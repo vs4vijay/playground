@@ -11,9 +11,9 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - SERVERURL=yourdns.duckdns.org #optional
+      - SERVERURL=zzzzzz.duckdns.org #optional
       - SERVERPORT=51820 #optional
-      - PEERS=1 #optional
+      - PEERS=zzz1,zzz2 #optional
       - PEERDNS=auto #optional
       - INTERNAL_SUBNET=10.13.13.0 #optional
       - ALLOWEDIPS=0.0.0.0/0 #optional

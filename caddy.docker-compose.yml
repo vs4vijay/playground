@@ -2,7 +2,8 @@ version: "3.8"
 
 services:
   caddy:
-    image: caddy:2.7.5-alpine
+    image: caddy-security:2.7.6
+    # image: caddy:2.7.6-alpine
     container_name: caddy
     restart: unless-stopped
     # command: caddy reverse-proxy --from https://yourdns:443 --to http://wg-easy:51821
@@ -28,7 +29,7 @@ services:
                 cookie lifetime 86400
 
                 transform user {
-                  match email zzzzzz@localdomain.local
+                  match email zuzuzu@zzzzzz.duckdns.org
                   action add role authp/user
                 }
               }
@@ -59,7 +60,6 @@ services:
               respond "hey" 200
             }
             
-            
             route /portainer* {
               authorize with admin_policy
               uri strip_prefix /portainer
@@ -79,6 +79,10 @@ services:
       - ~/.caddy:/data
     networks:
       - web
+    environment:
+      AUTHP_ADMIN_USER: zuzuzu
+      AUTHP_ADMIN_EMAIL: zuzuzu@zzzzzz.duckdns.org
+      AUTHP_ADMIN_SECRET: zpzpzp
 
 networks:
   web:

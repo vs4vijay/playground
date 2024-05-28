@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  stirling-pdf:
+    image: frooodle/s-pdf:latest
+    container_name: sdf
+    ports:
+      - "8080:8080"
+    # volumes:
+    #   - /location/of/trainingData:/usr/share/tessdata
+    #   - /location/of/extraConfigs:/configs
+    #   - /location/of/customFiles:/customFiles/
+    #   - /location/of/logs:/logs/
+    environment:
+      - SYSTEM_ROOT_URI_PATH=sdf
+      - DOCKER_ENABLE_SECURITY=false
+      - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
+      - LANGS=en_GB
+    restart: unless-stopped
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: internal
+    external: true

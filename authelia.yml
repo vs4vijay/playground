@@ -1,0 +1,40 @@
+version: "3.8"
+
+secrets:
+  JWT_SECRET:
+    file: "${PWD}/data/authelia/secrets/JWT_SECRET"
+  SESSION_SECRET:
+    file: "${PWD}/data/authelia/secrets/SESSION_SECRET"
+  STORAGE_PASSWORD:
+    file: "${PWD}/data/authelia/secrets/STORAGE_PASSWORD"
+  STORAGE_ENCRYPTION_KEY:
+    file: "${PWD}/data/authelia/secrets/STORAGE_ENCRYPTION_KEY"
+
+services:
+  authelia:
+    container_name: "authelia"
+    image: "docker.io/authelia/authelia:latest"
+    restart: "unless-stopped"
+    networks:
+      - internal
+    expose:
+      - 9091
+    secrets:
+      [
+        "JWT_SECRET",
+        "SESSION_SECRET",
+        "STORAGE_PASSWORD",
+        "STORAGE_ENCRYPTION_KEY",
+      ]
+    environment:
+      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: "/run/secrets/JWT_SECRET"
+      AUTHELIA_SESSION_SECRET_FILE: "/run/secrets/SESSION_SECRET"
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE: "/run/secrets/STORAGE_PASSWORD"
+      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: "/run/secrets/STORAGE_ENCRYPTION_KEY"
+    volumes:
+      - "${PWD}/data/authelia/config:/config"
+
+networks:
+  internal:
+    name: internal
+    external: true

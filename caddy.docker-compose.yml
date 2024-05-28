@@ -26,7 +26,8 @@ services:
               authentication portal myportal {
                 enable identity store localdb
                 cookie domain zzzzzz.duckdns.org
-                cookie lifetime 86400
+                # 5 days
+                cookie lifetime 432000
 
                 transform user {
                   match email zuzuzu@zzzzzz.duckdns.org
@@ -35,6 +36,7 @@ services:
               }
 
               authorization policy admin_policy {
+                set auth url https://zzzzzz.duckdns.org/auth
                 allow roles authp/user
               }
             }
@@ -48,6 +50,10 @@ services:
             
             route /auth* {
               authenticate with myportal
+
+              # /auth/whoami
+              # /auth/settings
+              # /auth/portal
             }
             
             route /hi* {
@@ -65,6 +71,21 @@ services:
               uri strip_prefix /portainer
 
               reverse_proxy portainer:9000
+            }
+
+          }
+
+
+          rancher.ocvoid.duckdns.org:443 {
+            
+            route /* {
+              authorize with admin_policy
+
+              reverse_proxy rancher:80
+            }
+            
+            route /test* {
+              respond "test passed" 200
             }
 
           }

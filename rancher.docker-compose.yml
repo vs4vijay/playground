@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  rancher:
+    image: rancher/rancher:latest
+    container_name: rancher
+    ports:
+      - 4480:80
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

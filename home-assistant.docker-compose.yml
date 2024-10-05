@@ -1,6 +1,56 @@
 version: "3.8"
 
 services:
+  init-hass-config:
+    image: busybox
+    container_name: init-hass-config
+    # command: sh -c "mkdir -p /config && touch /config/configuration.yml"
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        echo "[+] Creating hass config"
+
+        mkdir -p /config
+
+        tee /config/configuration.yaml <<EOF
+          default_config:
+          
+          homeassistant:
+            name: viz_hass
+            latitude: 32.87336
+            longitude: -117.22743
+            elevation: 430
+            unit_system: metric
+            currency: USD
+            temperature_unit: C
+            time_zone: America/Los_Angeles
+            external_url: https://zzzzzz.duckdns.org
+            internal_url: http://hass:8123
+            allowlist_external_dirs:
+              - /config
+            allowlist_external_urls:
+              - https://fonts.googleapis.com
+              - https://fonts.gstatic.com
+              - https://cdn.materialdesignicons.com
+            media_dirs:
+              media: /media
+            legacy_templates: false
+        EOF
+
+        echo "[+] Created hass config"
+
+        pwd
+        ls -all
+        ls -all /config
+        tree /config
+
+        cat /config/configuration.yaml
+    volumes:
+      - ./hass_config:/config
+    networks:
+      - web
+    restart: "no"
+
   home-assistant:
     image: "ghcr.io/home-assistant/home-assistant:2024.10.1"
     container_name: hass
@@ -9,6 +59,8 @@ services:
     volumes:
       - ./hass_config:/config
       - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - init-hass-config
     restart: unless-stopped
     networks:
       - web

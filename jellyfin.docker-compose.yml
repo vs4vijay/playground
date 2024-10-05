@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:10
+    container_name: jellyfin
+    # user: uid:gid
+    ports:
+      - 8096:8096
+      - 8920:8920     # optional
+      - 7359:7359/udp # optional
+      - 1900:1900/udp # optional
+    volumes:
+      - ./jellyfin_config:/config
+      - ./jellyfin_cache:/cache
+      # - /data/mnt/movies:/data/movies:ro
+      # - type: bind
+      #   source: ./media
+      #   target: /media
+        # read_only: true
+    restart: "unless-stopped"
+    networks:
+      - web
+    environment:
+      - TZ=Asia/Kolkata
+      # Optional - alternative address used for autodiscovery
+      # - JELLYFIN_PublishedServerUrl=http://zzz.com
+    # Optional - may be necessary for docker healthcheck to pass if running in host network mode
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  web:
+    name: web
+    external: true

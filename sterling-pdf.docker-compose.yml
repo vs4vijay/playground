@@ -18,9 +18,9 @@ services:
       - LANGS=en_GB
     restart: unless-stopped
     networks:
-      - internal
+      - web
 
 networks:
-  internal:
-    name: internal
+  web:
+    name: web
     external: true

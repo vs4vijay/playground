@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  glances:
+    image: nicolargo/glances:4.1.2.1
+    container_name: glances
+    ports:
+      - "61208:61208"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web
+    external: true

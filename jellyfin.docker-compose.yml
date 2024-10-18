@@ -2,32 +2,50 @@ version: "3.8"
 
 services:
   jellyfin:
-    image: jellyfin/jellyfin:10
+    image: lscr.io/linuxserver/jellyfin:latest
+    # image: jellyfin/jellyfin:10
     container_name: jellyfin
     # user: uid:gid
+    environment:
+      - TZ=Asia/Kolkata
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      # Optional - alternative address used for autodiscovery
+      # - JELLYFIN_PublishedServerUrl=http://zzz.com
     ports:
       - 8096:8096
-      - 8920:8920     # optional
+      - 8920:8920 # optional
       - 7359:7359/udp # optional
       - 1900:1900/udp # optional
     volumes:
       - ./jellyfin_config:/config
       - ./jellyfin_cache:/cache
-      # - /data/mnt/movies:/data/movies:ro
+      - /home/proxnet/movies:/movies
+      - /home/proxnet/blackhole:/downloads
+      - /data/mnt/tv:/tv:ro
       # - type: bind
       #   source: ./media
       #   target: /media
-        # read_only: true
+      # read_only: true
     restart: "unless-stopped"
     networks:
       - web
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
     environment:
+      - LOG_LEVEL=debug
       - TZ=Asia/Kolkata
-      # Optional - alternative address used for autodiscovery
-      # - JELLYFIN_PublishedServerUrl=http://zzz.com
-    # Optional - may be necessary for docker healthcheck to pass if running in host network mode
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - PORT=5055
+    ports:
+      - 5055:5055
+    volumes:
+      - ./jellyseerr_config:/app/config
+    restart: unless-stopped
+    networks:
+      - web
 
 networks:
   web:

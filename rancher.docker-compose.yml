@@ -9,11 +9,8 @@ services:
     restart: unless-stopped
     privileged: true
     networks:
-      - internal
       - web
 
 networks:
-  internal:
-    name: internal
   web:
     name: web

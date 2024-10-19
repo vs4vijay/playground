@@ -36,13 +36,34 @@ services:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
     environment:
-      - LOG_LEVEL=debug
       - TZ=Asia/Kolkata
       - PORT=5055
+      # - LOG_LEVEL=debug
     ports:
       - 5055:5055
     volumes:
       - ./jellyseerr_config:/app/config
+    restart: unless-stopped
+    networks:
+      - web
+
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - TRANSMISSION_WEB_HOME=  #optional
+      - USER=                   #optional
+      - PASS=                   #optional
+    volumes:
+      - ./transmission_config:/config
+      - /home/proxnet/blackhole:/downloads
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
     restart: unless-stopped
     networks:
       - web

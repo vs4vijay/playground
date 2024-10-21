@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable
+    container_name: frigate
+    volumes:
+      - ./frigate_config:/config
+      - ./frigate_storage:/mnt/frigate
+      # - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+      #   target: /tmp/cache
+      #   tmpfs:
+      #     size: 1000000000
+    ports:
+      - "8971:8971"
+      - "8554:8554" # RTSP feeds
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web

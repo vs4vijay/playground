@@ -1,5 +1,10 @@
 version: "3.8"
 
+# mkdir /mnt/wd1tb
+# chown proxnet:proxnet /mnt/wd1tb/
+# sudo mount /dev/sda2 /mnt/wd1tb
+
+
 services:
   # Torrent Downloader
   deluge:

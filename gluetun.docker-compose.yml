@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+    # cap_add:
+    #   - NET_ADMIN
+    restart: unless-stopped
+    environment:
+      - VPN_SERVICE_PROVIDER=expressvpn
+      - OPENVPN_USER=abc
+      - OPENVPN_PASSWORD=abc
+      - SERVER_COUNTRIES=Netherlands
+      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
+      # - VPN_SERVICE_PROVIDER=ivpn
+      # - VPN_TYPE=openvpn
+      # # OpenVPN:
+      # - OPENVPN_USER=
+      # - OPENVPN_PASSWORD=
+      # # Wireguard:
+      # # - WIREGUARD_PRIVATE_KEY=wOEI9rqqbDwnN8/Bpp22sVz48T71vJ4fYmFWujulwUU=
+      # # - WIREGUARD_ADDRESSES=10.64.222.21/32
+      # # Timezone for accurate log times
+      # - TZ=
+      # # Server list updater
+      # # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
+      # - UPDATER_PERIOD=
+    networks:
+      - web
+
+networks:
+  web:
+    name: web

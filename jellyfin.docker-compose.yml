@@ -6,8 +6,9 @@ services:
     # image: jellyfin/jellyfin:10
     container_name: jellyfin
     # user: uid:gid
+    dns:
+      - 8.8.8.8
     environment:
-      - TZ=Asia/Kolkata
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC

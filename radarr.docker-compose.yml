@@ -4,7 +4,6 @@ version: "3.8"
 # chown proxnet:proxnet /mnt/wd1tb/
 # sudo mount /dev/sda2 /mnt/wd1tb
 
-
 services:
   # Torrent Downloader
   deluge:
@@ -44,6 +43,21 @@ services:
       - 8080:8080
       - 6882:6882
       - 6882:6882/udp
+    restart: unless-stopped
+    networks:
+      - web
+
+  flaresolverr:
+    # image: ghcr.io/flaresolverr/flaresolverr:latest
+    image: flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Etc/UTC
+    ports:
+      - "8191:8191"
     restart: unless-stopped
     networks:
       - web

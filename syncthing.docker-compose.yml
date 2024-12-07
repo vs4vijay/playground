@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   syncthing:
-    image: syncthing/syncthing
+    image: syncthing/syncthing:1.28.1
     # image: lscr.io/linuxserver/syncthing:latest
     container_name: syncthing
     hostname: syncthing
@@ -11,7 +11,7 @@ services:
       - PGID=1000
     volumes:
       - ./syncthing_config:/config
-      - ./sync_data:/var/syncthing
+      - ./Sync:/var/syncthing
     ports:
       - 8384:8384 # Web UI
       - 22000:22000/tcp # TCP file transfers

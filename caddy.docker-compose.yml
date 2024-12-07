@@ -21,6 +21,7 @@ services:
                 realm local
                 
                 path /etc/caddy/auth/local/users.json
+                # path {$HOME}/.local/caddy/users.json
               }
           
               authentication portal myportal {

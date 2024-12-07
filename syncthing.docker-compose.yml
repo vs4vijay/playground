@@ -6,12 +6,22 @@ services:
     # image: lscr.io/linuxserver/syncthing:latest
     container_name: syncthing
     hostname: syncthing
+    # entrypoint: ["/bin/sh","-c"]
+    # command:
+    #   - |
+    #     echo "[+] Setting User and Password"
+    #     syncthing generate --gui-user=${USER} --gui-password=${SYNCTHING_PASSWORD}
+    #     echo "[+] Starting Syncthing"
+    #     syncthing serve
     environment:
       - PUID=1000
       - PGID=1000
+      - STNODEFAULTFOLDER=1
+      - STNOUPGRADE=1
     volumes:
       - ./syncthing_config:/config
-      - ./Sync:/var/syncthing
+      - ./syncthing_data:/var/syncthing
+      - /home/opc/Sync:/srv/Sync
     ports:
       - 8384:8384 # Web UI
       - 22000:22000/tcp # TCP file transfers

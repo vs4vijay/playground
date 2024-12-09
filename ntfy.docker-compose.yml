@@ -2,12 +2,22 @@ version: "3.8"
 
 services:
   ntfy:
-    image: binwiederhier/ntfy
+    image: binwiederhier/ntfy:v2.11.0
     container_name: ntfy
     command:
       - serve
+    # user: 1000:1000
+    environment:
+      - TZ=UTC
+      - NTFY_BASE_URL=http://zzz.duckdns.com
+      - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
+      - NTFY_AUTH_FILE=/var/lib/ntfy/auth.db
+      - NTFY_ATTACHMENT_CACHE_DIR=/var/lib/ntfy/attachments
+      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
+      - NTFY_ENABLE_LOGIN=true
+      - NTFY_BEHIND_PROXY=true
     volumes:
-      - /var/cache/ntfy:/var/cache/ntfy
+      - /var/lib/ntfy:/var/lib/ntfy
       - /etc/ntfy:/etc/ntfy
     ports:
       - 8780:80

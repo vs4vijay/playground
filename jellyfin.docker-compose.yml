@@ -36,6 +36,8 @@ services:
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
+    dns:
+      - 8.8.8.8
     environment:
       - TZ=Asia/Kolkata
       - PORT=5055

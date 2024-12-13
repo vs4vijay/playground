@@ -1,12 +1,13 @@
 version: "3.8"
 
 # to run define K3S_TOKEN, K3S_VERSION is optional, eg:
-#   K3S_TOKEN=${RANDOM}${RANDOM}${RANDOM} docker-compose up
+# K3S_TOKEN=${RANDOM}${RANDOM}${RANDOM} docker-compose up
+# K3S_VERSION=v1.30.7-k3s1
 
 services:
-  k3s-server:
+  k3s_server:
     image: "rancher/k3s:${K3S_VERSION:-latest}"
-    command: server
+    command: k3s_server
     tmpfs:
       - /run
       - /var/run
@@ -19,20 +20,20 @@ services:
       - K3S_TOKEN=${K3S_TOKEN:?err}
       - K3S_KUBECONFIG_OUTPUT=/output/kubeconfig.yaml
       - K3S_KUBECONFIG_MODE=666
-    volumes:
-      - k3s-server:/var/lib/rancher/k3s
-      # This is just so that we get the kubeconfig file out
-      - .:/output
     ports:
       - 6443:6443 # Kubernetes API Server
       - 80:80 # Ingress controller port 80
       - 443:443 # Ingress controller port 443
+    volumes:
+      - k3s_server:/var/lib/rancher/k3s
+      # This is just so that we get the kubeconfig file out
+      - .:/output
     privileged: true
     restart: always
     networks:
       - web
 
-  k3s-agent:
+  k3s_agent:
     image: "rancher/k3s:${K3S_VERSION:-latest}"
     tmpfs:
       - /run
@@ -46,14 +47,14 @@ services:
       - K3S_URL=https://k3s-server:6443
       - K3S_TOKEN=${K3S_TOKEN:?err}
     volumes:
-      - k3s-agent:/var/lib/rancher/k3s
+      - k3s_agent:/var/lib/rancher/k3s
     privileged: true
     restart: always
     networks:
       - web
 
   rancher:
-    image: rancher/rancher:latest
+    image: rancher/rancher:v2.10.0
     container_name: rancher
     ports:
       - 4480:80
@@ -63,8 +64,8 @@ services:
       - web
 
 volumes:
-  k3s-server: {}
-  k3s-agent: {}
+  k3s_server: {}
+  k3s_agent: {}
 
 networks:
   web:

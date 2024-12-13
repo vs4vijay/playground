@@ -17,12 +17,12 @@ services:
       - NTFY_AUTH_DEFAULT_ACCESS=deny-all
       - NTFY_ENABLE_LOGIN=true
       - NTFY_BEHIND_PROXY=true
+    ports:
+      - 8780:80
     volumes:
       - ./ntfy_data=/var/lib/ntfy
       # - /var/lib/ntfy:/var/lib/ntfy
       # - /etc/ntfy:/etc/ntfy
-    ports:
-      - 8780:80
     healthcheck:
       test:
         [

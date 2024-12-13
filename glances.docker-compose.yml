@@ -2,8 +2,10 @@ version: "3.9"
 
 services:
   glances:
-    image: nicolargo/glances:4.1.2.1
+    image: nicolargo/glances:4.2.1
     container_name: glances
+    environment:
+      - "GLANCES_OPT=-w"
     ports:
       - "61208:61208"
     volumes:

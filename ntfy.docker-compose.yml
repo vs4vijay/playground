@@ -5,6 +5,7 @@ services:
     image: binwiederhier/ntfy:v2.11.0
     container_name: ntfy
     command:
+      # - ntfy user add --role=admin phil    # Add admin user
       - serve
     # user: 1000:1000
     environment:
@@ -17,8 +18,9 @@ services:
       - NTFY_ENABLE_LOGIN=true
       - NTFY_BEHIND_PROXY=true
     volumes:
-      - /var/lib/ntfy:/var/lib/ntfy
-      - /etc/ntfy:/etc/ntfy
+      - ./ntfy_data=/var/lib/ntfy
+      # - /var/lib/ntfy:/var/lib/ntfy
+      # - /etc/ntfy:/etc/ntfy
     ports:
       - 8780:80
     healthcheck:

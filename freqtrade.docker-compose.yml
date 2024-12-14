@@ -1,39 +1,31 @@
 version: "3.8"
 
 services:
+  # TODO: Should be deployed on subdomain
   freqtrade:
     image: freqtradeorg/freqtrade:stable
     container_name: freqtrade
-    # image: freqtradeorg/freqtrade:develop
-    # Use plotting image
-    # image: freqtradeorg/freqtrade:develop_plot
-    # # Enable GPU Image and GPU Resources (only relevant for freqAI)
-    # # Make sure to uncomment the whole deploy section
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
-    # Build step - only needed when additional dependencies are needed
-    # build:
-    #   context: .
-    #   dockerfile: "./docker/Dockerfile.custom"
-    volumes:
-      - "./freqtrade_data:/freqtrade/user_data"
-    # Expose api on port 8080 (localhost only)
-    # Please read the https://www.freqtrade.io/en/stable/rest-api/ documentation
-    # for more information.
-    ports:
-      - "127.0.0.1:8787:8080"
-    # Default command used when running `docker compose up`
+    # user: "1001:1001"
+    stdin_open: true
+    tty: true
+    # command: >
+    #   create-userdir 
+    #   --userdir user_data
+    # command: >
+    #   new-config 
+    #   --config user_data/config.json
     command: >
       trade
       --logfile /freqtrade/user_data/logs/freqtrade.log
       --db-url sqlite:////freqtrade/user_data/tradesv3.sqlite
       --config /freqtrade/user_data/config.json
       --strategy SampleStrategy
+    ports:
+      - "8787:8080"
+      # - "127.0.0.1:8787:8080"
+    volumes:
+    # TODO: Make sure directory freqtrade_data exists
+      - "./freqtrade_data:/freqtrade/user_data"
     restart: unless-stopped
     networks:
       - web

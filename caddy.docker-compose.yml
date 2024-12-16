@@ -25,7 +25,10 @@ services:
               }
           
               authentication portal myportal {
+                crypto key sign-verify {env.JWT_CRYPTO_KEY}
+
                 enable identity store localdb
+
                 cookie domain zzzzzz.duckdns.org
                 # 5 days
                 cookie lifetime 432000
@@ -37,7 +40,12 @@ services:
               }
 
               authorization policy admin_policy {
+                crypto key sign-verify {env.JWT_CRYPTO_KEY}
                 set auth url https://zzzzzz.duckdns.org/auth
+                
+                # with basic auth portal myportal realm local
+                # with api key auth portal myportal realm local
+
                 allow roles authp/user
               }
             }
@@ -102,9 +110,11 @@ services:
     networks:
       - web
     environment:
-      AUTHP_ADMIN_USER: zuzuzu
-      AUTHP_ADMIN_EMAIL: zuzuzu@zzzzzz.duckdns.org
-      AUTHP_ADMIN_SECRET: zpzpzp
+      # TODO: Create below env vars
+      AUTHP_ADMIN_USER: ${ADMIN_USER}
+      AUTHP_ADMIN_EMAIL: ${ADMIN_USER}@zzzzzz.duckdns.org
+      AUTHP_ADMIN_SECRET: ${ADMIN_PASSWORD}
+      JWT_CRYPTO_KEY: ${JWT_CRYPTO_KEY}
 
 networks:
   web:

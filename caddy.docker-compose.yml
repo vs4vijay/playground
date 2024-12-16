@@ -29,19 +29,19 @@ services:
 
                 enable identity store localdb
 
-                cookie domain zzzzzz.duckdns.org
+                cookie domain {env.DOMAIN}
                 # 5 days
                 cookie lifetime 432000
 
                 transform user {
-                  match email zuzuzu@zzzzzz.duckdns.org
+                  match email {env.ADMIN_USER}@{env.DOMAIN}
                   action add role authp/user
                 }
               }
 
               authorization policy admin_policy {
                 crypto key sign-verify {env.JWT_CRYPTO_KEY}
-                set auth url https://zzzzzz.duckdns.org/auth
+                set auth url https://{env.DOMAIN}/auth
                 
                 # with basic auth portal myportal realm local
                 # with api key auth portal myportal realm local
@@ -51,7 +51,7 @@ services:
             }
           }
         
-          zzzzzz.duckdns.org:443 {
+          {env.DOMAIN}:443 {
             
             route /* {
               respond "root" 200
@@ -85,7 +85,7 @@ services:
           }
 
 
-          rancher.ocvoid.duckdns.org:443 {
+          rancher.{env.DOMAIN}:443 {
             
             route /* {
               authorize with admin_policy
@@ -111,8 +111,9 @@ services:
       - web
     environment:
       # TODO: Create below env vars
+      DOMAIN: ${DOMAIN}
       AUTHP_ADMIN_USER: ${ADMIN_USER}
-      AUTHP_ADMIN_EMAIL: ${ADMIN_USER}@zzzzzz.duckdns.org
+      AUTHP_ADMIN_EMAIL: "${ADMIN_USER}@${DOMAIN}"
       AUTHP_ADMIN_SECRET: ${ADMIN_PASSWORD}
       JWT_CRYPTO_KEY: ${JWT_CRYPTO_KEY}
 

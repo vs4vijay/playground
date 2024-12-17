@@ -1,0 +1,35 @@
+version: "3.9"
+
+# TODO: Enable binderfs kernel module and make sure it gets loaded when host gets booted
+# 
+# sudo apt install linux-modules-extra-`uname -r`
+# sudo modprobe binder_linux devices="binder,hwbinder,vndbinder"
+# sudo cat <<EOT >> /etc/modules-load.d/redroid.conf
+# binder_linux
+# options binder_linux devices="binder,hwbinder,vndbinder"
+# EOT
+# sudo reboot
+
+services:
+  redroid:
+    image: redroid/redroid:15.0.0_64only-latest
+    container_name: redroid
+    privileged: true
+    command:
+      - androidboot.redroid_gpu_mode=guest
+      - redroid.vncserver=1
+    #   - ro.secure=0
+    environment:
+      - TEST=test
+    ports:
+      - 5555:5555
+    # volumes:
+    #   - ~/data:/data
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web
+    external: true

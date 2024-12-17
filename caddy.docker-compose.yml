@@ -33,6 +33,19 @@ services:
                 # 5 days
                 cookie lifetime 432000
 
+                ui {
+                  meta title "Homelab"
+                  meta author "Viz"
+                  
+                  links {
+                      "Identity" "/auth/whoami" icon "las la-user"
+                      "Profile" "/auth/profile/" icon "las la-rocket"
+                      "Portal" "/auth/portal/" icon "las la-rocket"
+                      "Home" "/" icon "las la-sitemap"
+                      "Portainer" "/portainer/" icon "las la-cog"
+                  }
+                }
+
                 transform user {
                   match email {env.ADMIN_USER}@{env.DOMAIN}
                   action add role authp/user

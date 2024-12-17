@@ -1,0 +1,22 @@
+services:
+  ubuntu:
+    image: ubuntu:24.10
+    container_name: ubuntu
+    tty: true
+    stdin_open: true
+    command: 
+      - sleep infinity
+    # ports:
+    #   - 8080:8080
+    # volumes:
+    #   - ./ubuntu_data:/data
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

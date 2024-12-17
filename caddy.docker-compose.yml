@@ -1,8 +1,14 @@
-version: "3.8"
+# TODO: Create env vars
+# DOMAIN=
+# ADMIN_USER=
+# ADMIN_EMAIL=
+# ADMIN_PASSWORD=
+# JWT_CRYPTO_KEY=
 
 services:
   caddy:
-    image: caddy-security:2.7.6
+    image: caddy-security:latest
+    # image: caddy-security:2.7.6
     # image: caddy:2.7.6-alpine
     container_name: caddy
     restart: unless-stopped
@@ -25,13 +31,14 @@ services:
               }
           
               authentication portal myportal {
-                crypto key sign-verify {env.JWT_CRYPTO_KEY}
+                crypto key sign-verify $JWT_CRYPTO_KEY
 
                 enable identity store localdb
 
-                cookie domain {env.DOMAIN}
+                cookie domain $DOMAIN
                 # 5 days
                 cookie lifetime 432000
+                crypto default token lifetime 432000
 
                 ui {
                   meta title "Homelab"
@@ -47,24 +54,24 @@ services:
                 }
 
                 transform user {
-                  match email {env.ADMIN_USER}@{env.DOMAIN}
-                  action add role authp/user
+                  match email $ADMIN_EMAIL
+                  action add role authp/admin
                 }
               }
 
               authorization policy admin_policy {
-                crypto key sign-verify {env.JWT_CRYPTO_KEY}
-                set auth url https://{env.DOMAIN}/auth
+                crypto key sign-verify $JWT_CRYPTO_KEY
+                set auth url https://$DOMAIN/auth
                 
                 # with basic auth portal myportal realm local
                 # with api key auth portal myportal realm local
 
-                allow roles authp/user
+                allow roles authp/admin
               }
             }
           }
         
-          {env.DOMAIN}:443 {
+          $DOMAIN:443 {
             
             route /* {
               respond "root" 200
@@ -97,8 +104,7 @@ services:
 
           }
 
-
-          rancher.{env.DOMAIN}:443 {
+          rancher.$DOMAIN:443 {
             
             route /* {
               authorize with admin_policy
@@ -126,7 +132,7 @@ services:
       # TODO: Create below env vars
       DOMAIN: ${DOMAIN}
       AUTHP_ADMIN_USER: ${ADMIN_USER}
-      AUTHP_ADMIN_EMAIL: "${ADMIN_USER}@${DOMAIN}"
+      AUTHP_ADMIN_EMAIL: "${ADMIN_EMAIL}"
       AUTHP_ADMIN_SECRET: ${ADMIN_PASSWORD}
       JWT_CRYPTO_KEY: ${JWT_CRYPTO_KEY}
 

@@ -1,4 +1,9 @@
-version: "3.8"
+# TODO: Install Docker and Docker Compose
+# 
+# mkdir portainer_data
+# sudo curl -fsSL https://get.docker.com/ | CHANNEL=stable bash
+# sudo usermod -aG docker $(whoami)
+# docker compose -f portainer.docker-compose.yml -p portainer up -d
 
 services:
   portainer:
@@ -7,15 +12,13 @@ services:
     ports:
       - 6060:9443
     volumes:
-      - portainer_data:/data
+      # TODO: Make sure ./portainer_data exists
+      - ./portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     networks:
       - internal
       - web
-
-volumes:
-  portainer_data: {}
 
 networks:
   internal:

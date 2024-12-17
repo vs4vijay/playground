@@ -1,10 +1,10 @@
 services:
-  ubuntu:
-    image: ubuntu:24.10
-    container_name: ubuntu
+  debian:
+    image: debian:12.8
+    container_name: debian
     tty: true
     stdin_open: true
-    command: sleep infinity
+    command: /bin/bash
     # ports:
     #   - 8080:8080
     # volumes:

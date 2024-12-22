@@ -1,0 +1,30 @@
+# TODO: Host this on subdomain
+# 
+# Access /kasm on port 3000 for install wizard
+# Access kasm.$DOMAIN on port 443 for Kasm Workspaces
+# User: admin@kasm.local
+
+services:
+  kasm:
+    image: lscr.io/linuxserver/kasm:1.16.1
+    container_name: kasm
+    privileged: true
+    environment:
+      - KASM_PORT=443
+    ports:
+      - 3000:3000
+      - 8443:443
+    volumes:
+      # TODO: Make sure to create these directories
+      - ~/kasm_opt:/opt
+      - ~/kasm_profiles:/profiles
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

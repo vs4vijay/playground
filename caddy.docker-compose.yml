@@ -101,6 +101,17 @@ services:
 
               reverse_proxy portainer:9000
             }
+            
+            route /kasm* {
+              authorize with admin_policy
+              uri strip_prefix /kasm
+
+              reverse_proxy kasm:3000 {
+                transport http {
+                  tls_insecure_skip_verify
+                }
+              }
+            }
 
           }
 

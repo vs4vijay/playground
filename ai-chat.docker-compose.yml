@@ -1,0 +1,24 @@
+
+services:
+  serge:
+    image: ghcr.io/serge-chat/serge:latest
+    container_name: serge
+    ports:
+      - 8008:8008
+    volumes:
+      - weights:/usr/src/app/weights
+      - datadb:/data/db/
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+volumes:
+  weights:
+  datadb:
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

@@ -1,0 +1,20 @@
+services:
+  adguard:
+    image: adguard/adguardhome:v0.107.55
+    container_name: adguard
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 8680:80
+    # volumes:
+    #   - ./ubuntu_data:/data
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

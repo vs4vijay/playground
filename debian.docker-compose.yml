@@ -8,7 +8,7 @@ services:
     # ports:
     #   - 8080:8080
     # volumes:
-    #   - ./ubuntu_data:/data
+    #   - ~/ubuntu_data:/data
     restart: unless-stopped
     networks:
       - internal

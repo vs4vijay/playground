@@ -1,4 +1,7 @@
-version: "3.8"
+# TODO: Deploy at subdomain
+# 
+# Create a user with admin role in the ntfy container:
+# ntfy user add --role=admin phil
 
 services:
   ntfy:
@@ -8,6 +11,8 @@ services:
       # - ntfy user add --role=admin phil    # Add admin user
       - serve
     # user: 1000:1000
+    stdin_open: true
+    tty: true
     environment:
       - TZ=UTC
       - NTFY_BASE_URL=http://zzz.duckdns.com
@@ -20,7 +25,7 @@ services:
     ports:
       - 8780:80
     volumes:
-      - ./ntfy_data=/var/lib/ntfy
+      - ./ntfy_data:/var/lib/ntfy
       # - /var/lib/ntfy:/var/lib/ntfy
       # - /etc/ntfy:/etc/ntfy
     healthcheck:

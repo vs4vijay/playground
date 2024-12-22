@@ -12,7 +12,8 @@ version: "3.9"
 
 services:
   redroid:
-    image: redroid/redroid:15.0.0_64only-latest
+    image: redroid/redroid:15.0.0-latest
+    # image: redroid/redroid:15.0.0_64only-latest
     container_name: redroid
     privileged: true
     command:

@@ -1,0 +1,18 @@
+services:
+  mobsf:
+    image: opensecurity/mobile-security-framework-mobsf:v4.1.3
+    container_name: mobsf
+    environment:
+      - MOBSF_API_KEY=
+    ports:
+      - 8009:8000
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

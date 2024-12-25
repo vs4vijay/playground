@@ -15,7 +15,7 @@ services:
     tty: true
     environment:
       - TZ=UTC
-      - NTFY_BASE_URL=http://zzz.duckdns.com
+      - NTFY_BASE_URL=http://zzz.duckdns.org
       - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
       - NTFY_AUTH_FILE=/var/lib/ntfy/auth.db
       - NTFY_ATTACHMENT_CACHE_DIR=/var/lib/ntfy/attachments

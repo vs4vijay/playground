@@ -1,0 +1,30 @@
+# Navigate to /admin/ and login with the password you set in the environment variables
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "6180:80/tcp"
+      # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+    environment:
+      TZ: "UTC"
+      WEBPASSWORD: ${PIHOLE_PASSWORD}
+    # Volumes store your data between container upgrades
+    volumes:
+      - "./pihole-etc-pihole:/etc/pihole"
+      - "./pihole-etc-dnsmasq.d:/etc/dnsmasq.d"
+    # cap_add:
+    #   - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

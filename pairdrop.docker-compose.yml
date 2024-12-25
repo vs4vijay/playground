@@ -1,0 +1,59 @@
+# Caddy config:
+#
+# route /pairdrop* {
+#   # authorize with admin_policy
+#   uri strip_prefix /pairdrop
+
+#   reverse_proxy pairdrop:3000 {
+#     header_up X-Forwarded-For {remote}
+#   }
+# }
+
+services:
+  pairdrop:
+    image: lscr.io/linuxserver/pairdrop:1.10.10
+    container_name: pairdrop
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      # optional
+      - DONATION_BUTTON_ACTIVE=false
+      - TWITTER_BUTTON_ACTIVE=false
+      - MASTODON_BUTTON_ACTIVE=false
+      - BLUESKY_BUTTON_ACTIVE=false
+      - CUSTOM_BUTTON_ACTIVE=false
+      - PRIVACYPOLICY_BUTTON_ACTIVE=false
+      - RATE_LIMIT=false
+      - WS_FALLBACK=false
+      - RTC_CONFIG=
+      - DEBUG_MODE=false
+    ports:
+      - "127.0.0.1:3000:3000"
+      # - 3478 tcp/udp
+      # - 5349 tcp/udp
+      # - 10000:20000 tcp/udp
+    restart: unless-stopped
+    networks:
+      - web
+
+  coturn:
+    image: coturn/coturn
+    container_name: coturn
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "5349:5349"
+      - "5349:5349/udp"
+      - "10000-20000:10000-20000/udp"
+    volumes:
+      - ./turnserver.conf:/etc/coturn/turnserver.conf
+      - ./ssl/:/etc/coturn/ssl/
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web
+    external: true

@@ -5,10 +5,9 @@ services:
     environment:
       - "GLANCES_OPT=-w"
     ports:
-      - "61208:61208"
+      - "127.0.0.1:61208:61208"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - /mnt/wd1tb:/srv/wd1tb:ro
     restart: unless-stopped
     networks:
       - web

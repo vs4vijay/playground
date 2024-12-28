@@ -38,7 +38,7 @@ services:
       - web
 
   coturn:
-    image: coturn/coturn
+    image: coturn/coturn:4.6.3
     container_name: coturn
     ports:
       - "3478:3478"

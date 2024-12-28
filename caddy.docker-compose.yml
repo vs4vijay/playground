@@ -77,6 +77,11 @@ services:
               respond "root" 200
             }
             
+            # route /* {
+            #   authorize with admin_policy
+            #   reverse_proxy glances:61208
+            # }
+            
             route /auth* {
               authenticate with myportal
 
@@ -120,6 +125,15 @@ services:
             #   }
             # }
 
+            # route /drop* {
+            #   # authorize with admin_policy
+            #   uri strip_prefix /drop
+
+            #   reverse_proxy pairdrop:3000 {
+            #     header_up X-Forwarded-For {remote}
+            #   }
+            # }
+
           }
 
           # ntfy.$DOMAIN:443 {
@@ -133,7 +147,6 @@ services:
           # rancher.$DOMAIN:443 {
           #   route /* {
           #     authorize with admin_policy
-
           #     reverse_proxy rancher:80
           #   }
           #   route /test* {

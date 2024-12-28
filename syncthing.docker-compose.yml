@@ -1,4 +1,4 @@
-version: "3.8"
+# TODO: Create ~/syncthing_config, ~/syncthing_data, ~/Sync directory
 
 services:
   syncthing:
@@ -19,14 +19,14 @@ services:
       - STNODEFAULTFOLDER=1
       - STNOUPGRADE=1
     ports:
-      - 8384:8384 # Web UI
+      - "127.0.0.1:8384:8384" # Web UI
       - 22000:22000/tcp # TCP file transfers
       - 22000:22000/udp # QUIC file transfers
       - 21027:21027/udp # Receive local discovery broadcasts
     volumes:
-      - ./syncthing_config:/config
-      - ./syncthing_data:/var/syncthing
-      - /home/opc/Sync:/srv/Sync
+      - /home/ubuntu/syncthing_config:/config
+      - /home/ubuntu/syncthing_data:/var/syncthing
+      - /home/ubuntu/Sync:/sync
     restart: unless-stopped
     networks:
       - web

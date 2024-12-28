@@ -6,11 +6,11 @@
 # JWT_CRYPTO_KEY=
 
 services:
-  caddy:
+  caddy-security:
     image: caddy-security:latest
     # image: caddy-security:2.7.6
     # image: caddy:2.7.6-alpine
-    container_name: caddy
+    container_name: caddy-security
     restart: unless-stopped
     # command: caddy reverse-proxy --from https://yourdns:443 --to http://wg-easy:51821
     entrypoint: ["/bin/sh","-c"]
@@ -85,14 +85,14 @@ services:
               # /auth/portal
             }
             
-            route /hi* {
-              respond "hi" 200
+            route /ping* {
+              respond "pong" 200
             }
             
-            route /hey* {
+            route /hi* {
               authorize with admin_policy
 
-              respond "hey" 200
+              respond "hello" 200
             }
             
             route /portainer* {
@@ -102,32 +102,44 @@ services:
               reverse_proxy portainer:9000
             }
             
-            route /kasm* {
+            route /sync* {
               authorize with admin_policy
-              uri strip_prefix /kasm
+              uri strip_prefix /sync
 
-              reverse_proxy kasm:3000 {
-                transport http {
-                  tls_insecure_skip_verify
-                }
-              }
+              reverse_proxy syncthing:8384
             }
+            
+            # route /kasm* {
+            #   authorize with admin_policy
+            #   uri strip_prefix /kasm
+
+            #   reverse_proxy kasm:3000 {
+            #     transport http {
+            #       tls_insecure_skip_verify
+            #     }
+            #   }
+            # }
 
           }
 
-          rancher.$DOMAIN:443 {
-            
-            route /* {
-              authorize with admin_policy
+          # ntfy.$DOMAIN:443 {
+          #   route /* {
+          #     # NO AUTH
+          #     # authorize with admin_policy
+          #     reverse_proxy ntfy:80
+          #   }
+          # }
 
-              reverse_proxy rancher:80
-            }
-            
-            route /test* {
-              respond "test passed" 200
-            }
+          # rancher.$DOMAIN:443 {
+          #   route /* {
+          #     authorize with admin_policy
 
-          }
+          #     reverse_proxy rancher:80
+          #   }
+          #   route /test* {
+          #     respond "test passed" 200
+          #   }
+          # }
         EOF
         
         echo "[+] Running Caddy"

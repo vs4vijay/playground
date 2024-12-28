@@ -1,7 +1,12 @@
 # TODO: Deploy at subdomain
 # 
-# Create a user with admin role in the ntfy container:
-# ntfy user add --role=admin phil
+# Execute command in the ntfy container -
+# Create a user and grant permission:
+# ntfy user add viz
+# ntfy access viz "*" rw
+# 
+# Create a user with admin role:
+# ntfy user add --role=admin viz
 
 services:
   ntfy:
@@ -23,9 +28,9 @@ services:
       - NTFY_ENABLE_LOGIN=true
       - NTFY_BEHIND_PROXY=true
     ports:
-      - 8780:80
+      - "127.0.0.1:8780:80"
     volumes:
-      - ./ntfy_data:/var/lib/ntfy
+      - /home/ubuntu/ntfy_data:/var/lib/ntfy
       # - /var/lib/ntfy:/var/lib/ntfy
       # - /etc/ntfy:/etc/ntfy
     healthcheck:

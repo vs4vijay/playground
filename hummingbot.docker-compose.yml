@@ -1,9 +1,11 @@
-version: "3.9"
+# https://hummingbot.org/gateway/installation/#start-instance
 
 services:
   hummingbot:
     image: hummingbot/hummingbot:latest
     container_name: hummingbot
+    tty: true
+    stdin_open: true
     # environment:
     #   - CONFIG_PASSWORD=a
     #   - CONFIG_FILE_NAME=simple_pmm_example.py
@@ -24,28 +26,82 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-    tty: true
-    stdin_open: true
+    restart: unless-stopped
+    networks:
+      - web
+
+  hummingbot-dashboard:
+    image: hummingbot/dashboard:latest
+    container_name: hummingbot-dashboard
+    environment:
+        - AUTH_SYSTEM_ENABLED=False
+        - BACKEND_API_HOST=hummingbot-api
+        - BACKEND_API_PORT=8000
+        - BACKEND_API_USERNAME=admin
+        - BACKEND_API_PASSWORD=admin
+    ports:
+      - "8501:8501"
+    # volumes:
+    #   - ./credentials.yml:/home/dashboard/credentials.yml
+    #   - ./pages:/home/dashboard/frontend/pages
     restart: unless-stopped
     networks:
       - web
   
-  # dashboard:
-  #   image: hummingbot/dashboard:latest
-  #   container_name: dashboard
-  #   environment:
-  #       - AUTH_SYSTEM_ENABLED=True
-  #       - BACKEND_API_HOST=backend-api
-  #       - BACKEND_API_PORT=8000
-  #   ports:
-  #     - "8501:8501"
-  #   restart: unless-stopped
-  #   networks:
-  #     - web
+  hummingbot-api:
+    image: hummingbot/backend-api:latest
+    container_name: hummingbot-api
+    # env_file:
+      # - .env
+    environment:
+      - BROKER_HOST=hummingbot-broker
+      - BROKER_PORT=1883
+      - USERNAME=admin
+      - PASSWORD=admin
+    ports:
+      - "8000:8000"
+    volumes:
+      # - ./bots:/backend-api/bots
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      - web
+  
+  hummingbot-broker:
+    image: emqx:5
+    container_name: hummingbot-broker
+    environment:
+      - EMQX_NAME=emqx
+      - EMQX_HOST=node1.emqx.local
+      - EMQX_CLUSTER__DISCOVERY_STRATEGY=static
+      - EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.local]
+      - EMQX_LOADED_PLUGINS="emqx_recon,emqx_retainer,emqx_management,emqx_dashboard"
+    volumes:
+      - emqx-data:/opt/emqx/data
+      - emqx-log:/opt/emqx/log
+      - emqx-etc:/opt/emqx/etc
+    ports:
+      - "1883:1883"  # mqtt:tcp
+      - "8883:8883"  # mqtt:tcp:ssl
+      - "8083:8083"  # mqtt:ws
+      - "8084:8084"  # mqtt:ws:ssl
+      - "8081:8081"  # http:management
+      - "18083:18083"  # http:dashboard
+      - "61613:61613"  # web-stomp gateway
+    restart: unless-stopped
+    networks:
+      web:
+        aliases:
+          - node1.emqx.local
+    healthcheck:
+      test: [ "CMD", "/opt/emqx/bin/emqx_ctl", "status" ]
+      interval: 5s
+      timeout: 25s
+      retries: 5
 
-  # gateway:
+  # hummingbot-gateway:
   #  image: hummingbot/gateway:latest
-  #  container_name: gateway
+  #  container_name: hummingbot-gateway
   #  environment:
   #    - GATEWAY_PASSPHRASE=a
   #  ports:
@@ -59,6 +115,15 @@ services:
   # restart: unless-stopped
   # networks:
   #   - web
+
+# networks:
+#   emqx-bridge:
+#     driver: bridge
+
+volumes:
+  emqx-data: { }
+  emqx-log: { }
+  emqx-etc: { }
 
 networks:
   web:

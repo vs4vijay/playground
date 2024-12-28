@@ -6,7 +6,7 @@ services:
     container_name: duckdns
     environment:
       - SUBDOMAINS=zzz
-      - TOKEN=zzz
+      - TOKEN=${DUCKDNS_TOKEN}
     restart: unless-stopped
     networks:
       - internal

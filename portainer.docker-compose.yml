@@ -3,17 +3,20 @@
 # mkdir portainer_data
 # sudo curl -fsSL https://get.docker.com/ | CHANNEL=stable bash
 # sudo usermod -aG docker $(whoami)
+# sudo systemctl enable docker --now
+# exit
+# mkdir portainer_data
 # docker compose -f portainer.docker-compose.yml -p portainer up -d
 
 services:
   portainer:
-    image: portainer/portainer-ce:2.24.1
+    image: portainer/portainer-ce:2.25.1
     container_name: portainer
     ports:
       - 6060:9443
     volumes:
       # TODO: Make sure ./portainer_data exists
-      - ./portainer_data:/data
+      - ~/portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     networks:

@@ -3,11 +3,25 @@ services:
   serge:
     image: ghcr.io/serge-chat/serge:latest
     container_name: serge
+    # environment:
+    #   - 
     ports:
-      - 8008:8008
+      - "127.0.0.1:8008:8008"
     volumes:
       - weights:/usr/src/app/weights
       - datadb:/data/db/
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+  
+  lobe-chat:
+    image: lobehub/lobe-chat:latest
+    container_name: lobe-chat
+    # environment:
+    #   - OLLAMA_PROXY_URL=
+    ports:
+      - "127.0.0.1:3210:3210"
     restart: unless-stopped
     networks:
       - internal

@@ -1,5 +1,6 @@
 # TODO: Deploy at subdomain
 # 
+# Config Doc - https://docs.ntfy.sh/config/
 # Execute command in the ntfy container -
 # Create a user and grant permission:
 # ntfy user add viz
@@ -24,6 +25,11 @@ services:
       - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
       - NTFY_AUTH_FILE=/var/lib/ntfy/auth.db
       - NTFY_ATTACHMENT_CACHE_DIR=/var/lib/ntfy/attachments
+      - NTFY_ATTACHMENT_TOTAL_SIZE_LIMIT=2G
+      - NTFY_ATTACHMENT_FILE_SIZE_LIMIT=500M
+      - NTFY_ATTACHMENT_EXPIRY_DURATION=200h
+      - NTFY_VISITOR_ATTACHMENT_TOTAL_SIZE_LIMIT=2G
+      - NTFY_VISITOR_ATTACHMENT_DAILY_BANDWIDTH_LIMIT=2G
       - NTFY_AUTH_DEFAULT_ACCESS=deny-all
       - NTFY_ENABLE_LOGIN=true
       - NTFY_BEHIND_PROXY=true

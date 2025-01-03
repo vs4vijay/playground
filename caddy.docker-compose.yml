@@ -161,7 +161,9 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
     volumes:
-      - ~/.caddy:/data
+      # - caddy-config:/config
+      - caddy-data:/data
+      # - caddy-logs:/var/log/caddy
     networks:
       - web
     environment:
@@ -171,6 +173,11 @@ services:
       AUTHP_ADMIN_EMAIL: "${ADMIN_EMAIL}"
       AUTHP_ADMIN_SECRET: ${ADMIN_PASSWORD}
       JWT_CRYPTO_KEY: ${JWT_CRYPTO_KEY}
+
+volumes:
+  # caddy-config:
+  caddy-data:
+  # caddy-logs:
 
 networks:
   web:

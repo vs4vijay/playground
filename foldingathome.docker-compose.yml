@@ -8,9 +8,9 @@ services:
       - TZ=Etc/UTC
       - ACCOUNT_TOKEN=
       - MACHINE_NAME=
-      - CLI_ARGS= #optional
+      - CLI_ARGS=
     ports:
-      - 7396:7396 #optional
+      - "127.0.0.1:7396:7396"
     volumes:
       - /home/ubuntu/fah_config:/config
     restart: unless-stopped

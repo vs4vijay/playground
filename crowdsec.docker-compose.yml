@@ -1,0 +1,74 @@
+# CrowdSec
+#
+# mkdir -p /home/ubuntu/data/crowdsec/data
+# -v /var/log/journal:/run/log/journal
+# /var/log/access.log
+#
+# https://hub.crowdsec.net/author/crowdsecurity/collections/nginx
+# exec -t crowdsec cscli collections list
+# Add Bouncer: exec -t crowdsec cscli bouncers add traefik-bouncer-dshb
+# Dashboard: sudo cscli dashboard setup
+# acquis.yaml
+# filenames:
+#   - /var/log/auth.log
+#   - /var/log/syslog
+#   - /var/log/kern.log
+#   - /var/log/ufw.log
+#   - /var/log/mail.log
+# labels:
+#   type: syslog
+# ---
+
+services:
+  crowdsec:
+    image: crowdsecurity/crowdsec:v1.6.4
+    container_name: crowdsec
+    environment:
+      GID: 1000
+      # COLLECTIONS: "crowdsecurity/nginx crowdsecurity/caddy"
+      COLLECTIONS: "crowdsecurity/linux crowdsecurity/iptables crowdsecurity/http-cve crowdsecurity/sshd crowdsecurity/whitelist-good-actors"
+      # BOUNCER_KEY_CADDY: ${CROWDSEC_API_KEY}
+    ports:
+      - "127.0.0.1:6500:8080"
+    volumes:
+      # - /home/ubuntu/data/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - /home/ubuntu/data/crowdsec/data:/var/lib/crowdsec/data/
+      - /home/ubuntu/data/crowdsec/config:/etc/crowdsec/
+      - /var/log:/var/log:ro
+      # - caddy-logs:/var/log/caddy:ro
+      # - /var/log/journal:/var/log/host:ro
+      # - /var/run/docker.sock:/var/run/docker.sock:ro
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+  # crowdsec-dashboard:
+  #   image: crowdsec-dashboard
+  #   # dockerfile_inline: |
+  #   #   FROM alpine
+  #   #   RUN echo "hello world"
+  #   container_name: crowdsec-dashboard
+  #   environment:
+  #     MB_DB_FILE: /data/metabase.db
+  #     MGID: 1000
+  #   ports:
+  #     - "127.0.0.1:6530:3000"
+  #   depends_on:
+  #     - "crowdsec"
+  #   volumes:
+  #     - /home/ubuntu/data/crowdsec/data:/metabase-data/
+  #   security_opt:
+  #     - no-new-privileges:true
+  #   restart: unless-stopped
+  #   networks:
+  #     - internal
+  #     - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

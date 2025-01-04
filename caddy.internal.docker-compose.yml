@@ -12,7 +12,7 @@ services:
         echo "[+] Creating Caddyfile"
         tee Caddyfile <<EOF
           {
-            debug
+            # debug
             admin off
           }
         

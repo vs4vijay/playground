@@ -1,0 +1,23 @@
+# TODO:
+# mkdir /home/ubuntu/data/baikal/{config,data}
+# Clients: DAVx⁵ 
+
+services:
+  baikal:
+    image: ckulka/baikal:nginx
+    container_name: baikal
+    ports:
+      - "6080:80"
+    volumes:
+      - /home/ubuntu/data/baikal/config:/var/www/baikal/config
+      - /home/ubuntu/data/baikal/data:/var/www/baikal/data
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

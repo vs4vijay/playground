@@ -1,0 +1,75 @@
+# Caddy for Internal Home Network, without Authentication
+
+services:
+  caddy-internal:
+    image: caddy:2.8.4-alpine
+    container_name: caddy-internal
+    restart: unless-stopped
+    # command: caddy reverse-proxy --from https://yourdns:443 --to http://wg-easy:51821
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        echo "[+] Creating Caddyfile"
+        tee Caddyfile <<EOF
+          {
+            debug
+            admin off
+          }
+        
+          vizlab.local:443 {
+            
+            route /* {
+              respond "root" 200
+            }
+            
+            route /ping* {
+              respond "pong" 200
+            }
+            
+            route /portainer* {
+              uri strip_prefix /portainer
+
+              reverse_proxy portainer:9000
+            }
+            
+            route /jellyfin* {
+              uri strip_prefix /jellyfin
+
+              reverse_proxy jellyfin:8096
+            }
+
+            # route /drop* {
+            #   # authorize with admin_policy
+            #   uri strip_prefix /drop
+
+            #   reverse_proxy pairdrop:3000 {
+            #     header_up X-Forwarded-For {remote}
+            #   }
+            # }
+
+          }
+        EOF
+        
+        echo "[+] Running Caddy"
+        caddy run
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+    volumes:
+      # - caddy-config:/config
+      - caddy-data:/data
+      # - caddy-logs:/var/log/caddy
+    networks:
+      - web
+    environment:
+      - TEST=
+
+volumes:
+  # caddy-config:
+  caddy-data:
+  # caddy-logs:
+
+networks:
+  web:
+    name: web
+    external: true

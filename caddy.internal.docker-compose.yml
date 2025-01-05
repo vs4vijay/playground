@@ -27,9 +27,24 @@ services:
             }
             
             route /portainer* {
+              redir /portainer /portainer/
               uri strip_prefix /portainer
 
               reverse_proxy portainer:9000
+            }
+            
+            route /radarr* {
+              redir /radarr /radarr/
+              # uri strip_prefix radarr
+
+              reverse_proxy radarr:7878
+            }
+            
+            route /sonarr* {
+              redir /sonarr /sonarr/
+              # uri strip_prefix sonarr
+
+              reverse_proxy sonarr:8989
             }
             
             route /jellyfin* {

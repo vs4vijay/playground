@@ -1,0 +1,20 @@
+services:
+  it-tools:
+    image: corentinth/it-tools:latest
+    container_name: it-tools
+    environment:
+      - TEST=
+    ports:
+      - "127.0.0.1:1700:80"
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+    external: true
+  web:
+    name: web
+    external: true

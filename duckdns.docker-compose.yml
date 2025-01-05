@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   duckdns:
     image: lscr.io/linuxserver/duckdns:latest

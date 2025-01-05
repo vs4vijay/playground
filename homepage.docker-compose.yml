@@ -12,12 +12,60 @@ services:
         echo "[+] Creating settings.yaml"
         tee /app/config/settings.yaml <<EOF
           title: Viz Homepage
+          headerStyle: boxedWidgets
+          showStats: true
+
+          providers:
+            # openweathermap: ${OWM_API_KEY}
+            - openweathermap:
+                label: Home
+                latitude: 38.98
+                longitude: -76.15
+                units: imperial
+                provider: openweathermap
+                apikey: ${OWM_API_KEY}
+                cache: 5
+
+        EOF
+
+        echo "[+] Creating services.yaml"
+        tee /app/config/services.yaml <<EOF
+          - Dev:
+            - SvcB:
+                # href: http://a/
+                widget:
+                  type: calendar
+                  firstDayInWeek: sunday # optional - defaults to monday
+                  view: monthly # optional - possible values monthly, agenda
+                  maxEvents: 10 # optional - defaults to 10
+                  showTime: true # optional - show time for event happening today - defaults to false
+                  timezone: America/Los_Angeles
+            - SvcA:
+                href: http://a/
+                widget:
+                  type: glances
+                  url: http://glances:61208
+                  version: 4
+                  metric: cpu
+                  diskUnits: bytes # optional, bytes (default) or bbytes. Only applies to disk
+                  refreshInterval: 5000 # optional - in milliseconds, defaults to 1000 or more, depending on the metric
+                  pointsLimit: 15 # optional, defaults to 15
+          - Main:
+            - Svc1:
+                # href: http://a/
+                widget:
+                  type: caddy
+                  url: http://caddy-security:2019
+          - Misc:
+            - SvcX:
+                # href: http://a/
+                showStats: true
         EOF
         
         echo "[+] Running Homepage"
         node server.js
     environment:
-      - TEST=
+      - OWM_API_KEY=${OWM_API_KEY}
     ports:
       - "127.0.0.1:8088:3000"
     volumes:

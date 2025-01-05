@@ -28,44 +28,125 @@ services:
 
         EOF
 
+        echo "[+] Creating widgets.yaml"
+        tee /app/config/widgets.yaml <<EOF
+          - datetime:
+            text_size: md
+            format:
+              dateStyle: short
+              timeStyle: short
+              hour12: true
+          - search:
+              provider: google # google, duckduckgo, bing, baidu, brave or custom
+              focus: true
+              showSearchSuggestions: true
+              target: _blank
+          - openweathermap:
+              units: metric # or imperial
+              provider: openweathermap
+              apiKey: ${OWM_API_KEY}
+              cache: 5
+              format: # optional, Intl.NumberFormat options
+                maximumFractionDigits: 1
+          # - resources:
+          #     cpu: true
+          #     memory: true
+          #     disk: /
+          #     cputemp: true
+          #     uptime: true
+          #     units: metric
+          #     refresh: 3000
+          #     network: true
+          
+          - resources:
+              label: System
+              cpu: true
+              memory: true
+          - resources:
+              label: Storage
+              disk: /
+          - resources:
+              label: Network
+              network: true
+          
+          # - glances:
+          #     url: http://glances:61208
+          #     version: 4
+          #     cpu: true
+          #     mem: true
+          #     cputemp: true
+          #     uptime: true
+          #     disk: /
+          #     expanded: true
+        EOF
+
         echo "[+] Creating services.yaml"
         tee /app/config/services.yaml <<EOF
-          - Dev:
-            - SvcB:
-                # href: http://a/
+          - Info:
+            - Info:
+                href: https://${DOMAIN}/glances
                 widget:
-                  type: calendar
-                  firstDayInWeek: sunday # optional - defaults to monday
-                  view: monthly # optional - possible values monthly, agenda
-                  maxEvents: 10 # optional - defaults to 10
-                  showTime: true # optional - show time for event happening today - defaults to false
-                  timezone: America/Los_Angeles
-            - SvcA:
-                href: http://a/
+                  type: glances
+                  url: http://glances:61208
+                  version: 4
+                  metric: info
+                  refreshInterval: 5000
+            - CPU:
+                href: https://${DOMAIN}/glances
                 widget:
                   type: glances
                   url: http://glances:61208
                   version: 4
                   metric: cpu
-                  diskUnits: bytes # optional, bytes (default) or bbytes. Only applies to disk
-                  refreshInterval: 5000 # optional - in milliseconds, defaults to 1000 or more, depending on the metric
-                  pointsLimit: 15 # optional, defaults to 15
-          - Main:
-            - Svc1:
-                # href: http://a/
+                  refreshInterval: 5000
+            - Memory:
+                href: https://${DOMAIN}/glances
                 widget:
-                  type: caddy
-                  url: http://caddy-security:2019
-          - Misc:
+                  type: glances
+                  url: http://glances:61208
+                  version: 4
+                  metric: memory
+                  refreshInterval: 5000
+            - Containers:
+                # href: https://${DOMAIN}/glances
+                widget:
+                  type: glances
+                  url: http://glances:61208
+                  version: 4
+                  metric: containers
+                  refreshInterval: 5000
             - SvcX:
                 # href: http://a/
                 showStats: true
+          - Dev:
+            - SvcB:
+                # href: http://a/
+                widget:
+                  type: calendar
+                  view: monthly
+                  showTime: true
+                  timezone: Asia/Kolkata
+          - Main:
+            - Portainer:
+                href: http://${DOMAIN}/portainer
+                widget:
+                  type: portainer
+                  url: https://portainer:9443
+                  env: 3
+                  key: ${PORTAINER_TOKEN}
+            - Svc1:
+                href: http://${DOMAIN}
+                widget:
+                  type: caddy
+                  url: http://caddy-security:2019
         EOF
         
         echo "[+] Running Homepage"
         node server.js
     environment:
       - OWM_API_KEY=${OWM_API_KEY}
+      - DOMAIN=${DOMAIN}
+      - PORTAINER_TOKEN=$PORTAINER_TOKEN{}
     ports:
       - "127.0.0.1:8088:3000"
     volumes:

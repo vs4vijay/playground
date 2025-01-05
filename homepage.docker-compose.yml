@@ -1,0 +1,37 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        set -x
+        pwd
+        ls -all
+
+        echo "[+] Creating settings.yaml"
+        tee /app/config/settings.yaml <<EOF
+          title: Viz Homepage
+        EOF
+        
+        echo "[+] Running Homepage"
+        node server.js
+    environment:
+      - TEST=
+    ports:
+      - "127.0.0.1:8088:3000"
+    volumes:
+      - ~/homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+    external: true
+  web:
+    name: web
+    external: true

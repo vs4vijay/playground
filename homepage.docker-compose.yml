@@ -111,7 +111,7 @@ services:
                   metric: memory
                   refreshInterval: 5000
             - Containers:
-                # href: https://${DOMAIN}/glances
+                href: https://${DOMAIN}/glances
                 widget:
                   type: glances
                   url: http://glances:61208

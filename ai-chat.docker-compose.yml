@@ -1,7 +1,27 @@
-
 # groq: https://api.groq.com/openai/v1
+# ollama: http://localhost:11434/api/
+# ollama run llama3.2
 
 services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "[+] Starting ollama"
+        ollama start & sleep 20
+        ollama pull phi3 && tail -f /dev/null
+    environment:
+      - TEST=
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
 
   # Host on subdomain
   openwebui:
@@ -19,12 +39,12 @@ services:
     networks:
       - internal
       - web
-  
+
   # serge:
   #   image: ghcr.io/serge-chat/serge:latest
   #   container_name: serge
   #   # environment:
-  #   #   - 
+  #   #   -
   #   ports:
   #     - "127.0.0.1:8008:8008"
   #   volumes:
@@ -34,7 +54,7 @@ services:
   #   networks:
   #     - internal
   #     - web
-  
+
   # lobe-chat:
   #   image: lobehub/lobe-chat:latest
   #   container_name: lobe-chat
@@ -48,6 +68,7 @@ services:
   #     - web
 
 volumes:
+  ollama:
   open-webui:
   weights:
   datadb:

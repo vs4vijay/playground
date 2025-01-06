@@ -5,26 +5,18 @@ services:
     entrypoint: ["/bin/sh","-c"]
     command:
       - |
-        set -x
-        pwd
-        ls -all
-
         echo "[+] Creating settings.yaml"
         tee /app/config/settings.yaml <<EOF
-          title: Viz Homepage
+          title: mstream Homepage
+          # headerStyle: boxed
           headerStyle: boxedWidgets
+          cardBlur: sm
+          
           showStats: true
 
           providers:
-            # openweathermap: ${OWM_API_KEY}
-            - openweathermap:
-                label: Home
-                latitude: 38.98
-                longitude: -76.15
-                units: imperial
-                provider: openweathermap
-                apikey: ${OWM_API_KEY}
-                cache: 5
+            - finnhub: ${FINNHUB_API_KEY}
+            - openweathermap: ${OWM_API_KEY}
 
         EOF
 
@@ -36,18 +28,31 @@ services:
               dateStyle: short
               timeStyle: short
               hour12: true
+          
+          - resources:
+              label: System
+              cpu: true
+              memory: true
+              uptime: true
+          - resources:
+              label: Storage
+              disk: /
+          - resources:
+              label: Network
+              network: true
+          
           - search:
-              provider: google # google, duckduckgo, bing, baidu, brave or custom
+              provider: [duckduckgo] # google, duckduckgo, bing, baidu, brave or custom
               focus: true
               showSearchSuggestions: true
               target: _blank
-          - openweathermap:
-              units: metric # or imperial
-              provider: openweathermap
-              apiKey: ${OWM_API_KEY}
-              cache: 5
-              format: # optional, Intl.NumberFormat options
-                maximumFractionDigits: 1
+          
+          # - openweathermap:
+          #     units: metric # or imperial
+          #     provider: openweathermap
+          #     apiKey: ${OWM_API_KEY}
+          #     cache: 5
+          
           # - resources:
           #     cpu: true
           #     memory: true
@@ -58,17 +63,6 @@ services:
           #     refresh: 3000
           #     network: true
           
-          - resources:
-              label: System
-              cpu: true
-              memory: true
-          - resources:
-              label: Storage
-              disk: /
-          - resources:
-              label: Network
-              network: true
-          
           # - glances:
           #     url: http://glances:61208
           #     version: 4
@@ -78,6 +72,15 @@ services:
           #     uptime: true
           #     disk: /
           #     expanded: true
+
+          # - stocks:
+          #     provider: finnhub
+          #     apiKey: ${FINNHUB_API_KEY}
+          #     watchlist:
+          #       - MSFT
+          #       - AAPL
+          #       - GOOG
+          #       - NVDA
         EOF
 
         echo "[+] Creating services.yaml"
@@ -115,30 +118,84 @@ services:
                   version: 4
                   metric: containers
                   refreshInterval: 5000
-            - SvcX:
-                # href: http://a/
-                showStats: true
-          - Dev:
-            - SvcB:
-                # href: http://a/
-                widget:
-                  type: calendar
-                  view: monthly
-                  showTime: true
-                  timezone: Asia/Kolkata
-          - Main:
             - Portainer:
                 href: http://${DOMAIN}/portainer
                 widget:
                   type: portainer
                   url: https://portainer:9443
-                  env: 3
+                  env: 2
                   key: ${PORTAINER_TOKEN}
-            - Svc1:
-                href: http://${DOMAIN}
+            - Caddy:
                 widget:
                   type: caddy
-                  url: http://caddy-security:2019
+                  url: http://caddy-internal:2020
+            - Test:
+                showStats: true
+          - Media:
+            - Jellyfin:
+                href: http://${DOMAIN}/jellyfin
+                widget:
+                  type: jellyfin
+                  url: http://jellyfin:8096
+                  key: ${JELLYFIN_API_KEY}
+                  enableBlocks: true # optional, defaults to false
+                  enableNowPlaying: true # optional, defaults to true
+                  enableUser: true # optional, defaults to false
+                  showEpisodeNumber: true # optional, defaults to false
+                  expandOneStreamToTwoRows: false # optional, defaults to true
+            - Radarr:
+                href: http://${DOMAIN}/radarr
+                widget:
+                  type: radarr
+                  url: http://radarr:7878
+                  key: ${RADARR_API_KEY}
+                  enableQueue: true
+            - Sonarr:
+                href: http://${DOMAIN}/sonarr
+                widget:
+                  type: sonarr
+                  url: http://sonarr:8989
+                  key: ${SONARR_API_KEY}
+                  enableQueue: true
+            - Prowlarr:
+                href: http://${DOMAIN}/prowlarr
+                widget:
+                  type: prowlarr
+                  url: http://prowlarr:9696
+                  key: ${PROWLARR_API_KEY}
+            - Deluge:
+                href: http://${DOMAIN}/deluge
+                widget:
+                  type: deluge
+                  url: http://deluge:8112
+                  password: ${DELUGE_PASSWORD}
+            - Jellyseerr:
+                href: http://${DOMAIN}/jellyseerr
+                widget:
+                  type: jellyseerr
+                  url: http://jellyseerr:5055
+                  key: ${JELLYSEERR_API_KEY}
+            - Bazarr:
+                href: http://${DOMAIN}/bazarr
+                widget:
+                  type: bazarr
+                  url: http://bazarr:6767/bazarr
+                  key: ${BAZARR_API_KEY}
+          
+          - Main:
+            - Calendar:
+                widget:
+                  type: calendar
+                  view: monthly
+                  showTime: true
+                  timezone: Asia/Kolkata
+            - Crypto:
+                widget:
+                  # type: coinmarketcap
+                  # currency: USD
+                  # symbols: [BTC, ETH]
+                  # key: ${CMC_API_KEY}
+                  # defaultinterval: 1d
         EOF
         
         echo "[+] Running Homepage"

@@ -201,9 +201,7 @@ services:
         echo "[+] Running Homepage"
         node server.js
     environment:
-      - OWM_API_KEY=${OWM_API_KEY}
       - DOMAIN=${DOMAIN}
-      - PORTAINER_TOKEN=$PORTAINER_TOKEN{}
     ports:
       - "127.0.0.1:8088:3000"
     volumes:

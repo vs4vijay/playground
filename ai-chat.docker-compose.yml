@@ -1,33 +1,53 @@
 
+# groq: https://api.groq.com/openai/v1
+
 services:
-  serge:
-    image: ghcr.io/serge-chat/serge:latest
-    container_name: serge
-    # environment:
-    #   - 
+
+  # Host on subdomain
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui
+    environment:
+      - OLLAMA_PROXY_URL=
+      - ENABLE_SIGNUP="False"
     ports:
-      - "127.0.0.1:8008:8008"
+      - "127.0.0.1:9300:8080"
     volumes:
-      - weights:/usr/src/app/weights
-      - datadb:/data/db/
+      - open-webui:/app/backend/data
     restart: unless-stopped
     networks:
       - internal
       - web
   
-  lobe-chat:
-    image: lobehub/lobe-chat:latest
-    container_name: lobe-chat
-    # environment:
-    #   - OLLAMA_PROXY_URL=
-    ports:
-      - "127.0.0.1:3210:3210"
-    restart: unless-stopped
-    networks:
-      - internal
-      - web
+  # serge:
+  #   image: ghcr.io/serge-chat/serge:latest
+  #   container_name: serge
+  #   # environment:
+  #   #   - 
+  #   ports:
+  #     - "127.0.0.1:8008:8008"
+  #   volumes:
+  #     - weights:/usr/src/app/weights
+  #     - datadb:/data/db/
+  #   restart: unless-stopped
+  #   networks:
+  #     - internal
+  #     - web
+  
+  # lobe-chat:
+  #   image: lobehub/lobe-chat:latest
+  #   container_name: lobe-chat
+  #   # environment:
+  #   #   - OLLAMA_PROXY_URL=
+  #   ports:
+  #     - "127.0.0.1:3210:3210"
+  #   restart: unless-stopped
+  #   networks:
+  #     - internal
+  #     - web
 
 volumes:
+  open-webui:
   weights:
   datadb:
 

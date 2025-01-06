@@ -102,4 +102,15 @@ https://docs.radapp.io/getting-started
 
 wundergraph
 
+
+            route /svc/* {
+              authorize with admin_policy
+              
+              @hostport {
+                  path_regexp hostport ^/svc/(?<host>[^/]+)/(?<port>[^/]+)/
+              }
+              rewrite @hostport /{host}:{port}{uri}
+              reverse_proxy * http://{host}:{port}
+            }
+
 ```

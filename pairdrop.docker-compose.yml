@@ -1,13 +1,4 @@
-# Caddy config:
-#
-# route /pairdrop* {
-#   # authorize with admin_policy
-#   uri strip_prefix /pairdrop
-
-#   reverse_proxy pairdrop:3000 {
-#     header_up X-Forwarded-For {remote}
-#   }
-# }
+# Install at subdomain if using as PWA
 
 services:
   pairdrop:
@@ -24,10 +15,10 @@ services:
       - BLUESKY_BUTTON_ACTIVE=false
       - CUSTOM_BUTTON_ACTIVE=false
       - PRIVACYPOLICY_BUTTON_ACTIVE=false
+      - DEBUG_MODE=false
       - RATE_LIMIT=false
       - WS_FALLBACK=false
       - RTC_CONFIG=
-      - DEBUG_MODE=false
     ports:
       - "127.0.0.1:3000:3000"
       # - 3478 tcp/udp
@@ -37,21 +28,21 @@ services:
     networks:
       - web
 
-  coturn:
-    image: coturn/coturn:4.6.3
-    container_name: coturn
-    ports:
-      - "3478:3478"
-      - "3478:3478/udp"
-      - "5349:5349"
-      - "5349:5349/udp"
-      - "10000-20000:10000-20000/udp"
-    volumes:
-      - ./turnserver.conf:/etc/coturn/turnserver.conf
-      - ./ssl/:/etc/coturn/ssl/
-    restart: unless-stopped
-    networks:
-      - web
+  # coturn:
+  #   image: coturn/coturn:4.6.3
+  #   container_name: coturn
+  #   ports:
+  #     - "3478:3478"
+  #     - "3478:3478/udp"
+  #     - "5349:5349"
+  #     - "5349:5349/udp"
+  #     - "10000-20000:10000-20000/udp"
+  #   volumes:
+  #     - ./turnserver.conf:/etc/coturn/turnserver.conf
+  #     - ./ssl/:/etc/coturn/ssl/
+  #   restart: unless-stopped
+  #   networks:
+  #     - web
 
 networks:
   web:

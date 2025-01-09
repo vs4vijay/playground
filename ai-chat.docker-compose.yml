@@ -28,7 +28,10 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     container_name: openwebui
     environment:
-      - ENABLE_SIGNUP="False"
+      - WEBUI_AUTH=False
+      - RAG_EMBEDDING_ENGINE=ollama
+      - AUDIO_STT_ENGINE=openai
+      # - ENABLE_SIGNUP=False
       # - OLLAMA_PROXY_URL=
       # - OLLAMA_API_BASE_URL=http://host.docker.internal:11434/api
     ports:

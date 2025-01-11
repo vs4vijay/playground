@@ -28,9 +28,69 @@ services:
     networks:
       - web
 
+  # TODO: TO BE IMPLEMENTED
   # coturn:
   #   image: coturn/coturn:4.6.3
   #   container_name: coturn
+  #   entrypoint: ["/bin/sh","-c"]
+  #   command:
+  #     - |
+  #       set -x
+
+  #       echo "[+] Creating turnserver.conf"
+  #       tee /etc/coturn/turnserver.conf <<EOF
+  #         # TURN server name and realm
+  #         realm=${DOMAIN}
+  #         server-name=pairdrop
+
+  #         # IPs the TURN server listens to
+  #         listening-ip=0.0.0.0
+
+  #         # Main listening port for STUN and TURN
+  #         listening-port=3478
+
+  #         # Main listening port for TURN over TLS (TURNS)
+  #         # Use port 443 to bypass some firewalls
+  #         tls-listening-port=5349
+
+  #         # Further ports that are open for communication
+  #         min-port=10000
+  #         max-port=20000
+
+  #         # Use fingerprint in TURN message
+  #         fingerprint
+
+  #         # verbose
+  #         log-file=-
+
+  #         # Specify the user for the TURN authentification
+  #         user=${TURN_USER}:${TURN_PASSWORD}
+
+  #         # Enable long-term credential mechanism
+  #         lt-cred-mech
+
+  #         # SSL certificates
+  #         cert=/etc/coturn/ssl/cert.crt
+  #         pkey=/etc/coturn/ssl/pkey.pem
+  #         dh-file=/etc/coturn/ssl/dhparam.pem
+
+  #         # For security-reasons disable old ssl and tls-protocols
+  #         no-sslv3
+  #         no-tlsv1
+  #         no-tlsv1_1
+  #         no-tlsv1_2
+  #         no-rfc5780
+  #         no-stun-backward-compatibility
+  #         response-origin-only-with-rfc5780
+  #         no-cli
+  #         no-multicast-peers
+  #         no-software-attribute
+  #         check-origin-consistency
+        
+  #       EOF
+
+  #       bash docker-entrypoint.sh --log-file=stdout --external-ip=$(detect-external-ip)
+
   #   ports:
   #     - "3478:3478"
   #     - "3478:3478/udp"
@@ -38,8 +98,10 @@ services:
   #     - "5349:5349/udp"
   #     - "10000-20000:10000-20000/udp"
   #   volumes:
-  #     - ./turnserver.conf:/etc/coturn/turnserver.conf
-  #     - ./ssl/:/etc/coturn/ssl/
+  #     # - ./turnserver.conf:/etc/coturn/turnserver.conf
+  #     # - ./ssl/:/etc/coturn/ssl/
+  #   security_opt:
+  #     - no-new-privileges:true
   #   restart: unless-stopped
   #   networks:
   #     - web

@@ -1,0 +1,101 @@
+services:
+  authelia:
+    image: "authelia/authelia"
+    container_name: "authelia"
+
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -x
+
+        echo "[+] Creating configuration.yml"
+        tee /config/configuration.yml <<EOF
+          server:
+            address: 'tcp://:9091'
+
+          log:
+            level: 'debug'
+
+          totp:
+            issuer: '${DOMAIN}'
+
+          identity_validation:
+            reset_password:
+              jwt_secret: '${JWT_CRYPTO_KEY}'
+
+          authentication_backend:
+            file:
+              path: '/config/users.yml'
+
+          access_control:
+            default_policy: 'deny'
+            rules:
+              # Rules applied to everyone
+              - domain: 'public.${DOMAIN}'
+                policy: 'bypass'
+              - domain: 'traefik.${DOMAIN}'
+                policy: 'one_factor'
+              - domain: 'secure.${DOMAIN}'
+                policy: 'two_factor'
+
+          session:
+            secret: 'insecure_session_secret'
+
+            cookies:
+              - name: 'authelia_session'
+                domain: '${DOMAIN}'  # Should match whatever your root protected domain is
+                authelia_url: 'https://authelia.${DOMAIN}'
+                expiration: '1 hour'
+                inactivity: '5 minutes'
+
+          regulation:
+            max_retries: 3
+            find_time: '2 minutes'
+            ban_time: '5 minutes'
+
+          storage:
+            encryption_key: '${STORAGE_ENC_KEY}'
+            local:
+              path: '/config/db.sqlite3'
+
+          notifier:
+            disable_startup_check: true
+            filesystem:
+              filename: '/config/notifications.txt'
+        EOF
+
+        echo "[+] Creating users.yml"
+        tee /config/users.yml <<EOF
+          
+          users:
+            authelia:
+              disabled: false
+              displayname: 'Authelia User'
+              # Password is authelia
+              password: '${ADMIN_PASSWORD_HASH}'
+              # password: '$6$rounds=50000$BpLnfgDsc2WD8F2q$Zis.ixdg9s/UOJYrs56b5QEZFiZECu0qZVNsIYxBaNJ7ucIL.nlxVCT5tqh8KHG8X4tlwCFm5r6NTOZZ5qRFN/'
+              email: '${ADMIN_EMAIL}'
+              groups:
+                - 'admins'
+                - 'dev'
+        EOF
+
+        sh /app/entrypoint.sh
+    environment:
+      - DOMAIN=${DOMAIN}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
+      - JWT_CRYPTO_KEY=${JWT_CRYPTO_KEY}
+      - STORAGE_ENC_KEY=${STORAGE_ENC_KEY}
+    ports:
+      - "127.0.0.1:9091:9091"
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web
+    external: true

@@ -1,0 +1,26 @@
+# Next: https://web.libretro.com/
+
+services:
+  emulatorjs:
+    image: lscr.io/linuxserver/emulatorjs:latest
+    container_name: emulatorjs
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    ports:
+      - "127.0.0.1:3333:3000"
+      - "127.0.0.1:3380:80"
+    volumes:
+      - /home/ubuntu/data/games_roms:/roms
+      # - /home/ubuntu/data/games_data:/data
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

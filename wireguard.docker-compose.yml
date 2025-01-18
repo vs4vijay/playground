@@ -1,4 +1,4 @@
-version: "3.8"
+# TODO: mkdir -p /home/ubuntu/data/wireguard/config
 
 services:
   wireguard:
@@ -12,7 +12,8 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
       - SERVERURL=zzzzzz.duckdns.org #optional
-      - SERVERPORT=51820 #optional
+      - SERVERPORT=55555 #optional
+      # - SERVERPORT=51820 #optional
       - PEERS=zzz1,zzz2 #optional
       - PEERDNS=auto #optional
       - INTERNAL_SUBNET=10.13.13.0 #optional
@@ -20,10 +21,11 @@ services:
       - PERSISTENTKEEPALIVE_PEERS= #optional
       - LOG_CONFS=true #optional
     volumes:
-      - ./wireguard/config:/config
+      - /home/ubuntu/data/wireguard/config:/config
       - /lib/modules:/lib/modules #optional
     ports:
-      - 51820:51820/udp
+      - 55555:51820/udp
+      # - 51820:51820/udp
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     restart: unless-stopped

@@ -1,0 +1,23 @@
+services:
+  webtop:
+    image: lscr.io/linuxserver/webtop:latest
+    # image: lscr.io/linuxserver/webtop:debian-xfce
+    # image: lscr.io/linuxserver/webtop:debian-i3
+    # image: lscr.io/linuxserver/webtop:debian-mate
+    # image: lscr.io/linuxserver/webtop:debian-icewm
+    container_name: webtop
+    environment:
+      - TEST=
+    ports:
+      - "127.0.0.1:1234:3000"
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+    external: true
+  web:
+    name: web

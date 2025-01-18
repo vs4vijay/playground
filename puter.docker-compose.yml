@@ -1,0 +1,23 @@
+services:
+  puter:
+    image: ghcr.io/heyputer/puter:latest
+    container_name: puter
+    environment:
+      TZ: UTC
+      PUID: 1000
+      PGID: 1000
+    ports:
+      - "127.0.0.1:4100:4100"
+    # volumes:
+    #   - /home/ubuntu/data/puter/config:/etc/puter
+    #   - /home/ubuntu/data/puter/data:/var/puter
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

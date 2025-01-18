@@ -6,13 +6,13 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - ACCOUNT_TOKEN=
+      - ACCOUNT_TOKEN=${FAH_ACCOUNT_TOKEN}
       - MACHINE_NAME=
       - CLI_ARGS=
     ports:
       - "127.0.0.1:7396:7396"
     volumes:
-      - /home/ubuntu/fah_config:/config
+      - /home/ubuntu/data/fah_config:/config
     restart: unless-stopped
     networks:
       - internal

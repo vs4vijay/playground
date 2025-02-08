@@ -1,0 +1,12 @@
+@API_ENDPOINT = http://localhost:5043
+
+GET {{API_ENDPOINT}}/weatherforecast/
+Accept: application/json
+
+###
+
+
+GET {{API_ENDPOINT}}/api/v1/Projects
+Accept: application/json
+
+###

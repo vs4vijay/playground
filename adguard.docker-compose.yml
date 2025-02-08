@@ -1,17 +1,31 @@
+# Caddy Config:
+# route /adguard* {
+#   redir /adguard /adguard/
+#   uri strip_prefix adguard
+#   reverse_proxy adguard:3000
+#       header_down Location /login.html /adguard/login.html 
+#   }
+# }
+
 services:
   adguard:
-    image: adguard/adguardhome:v0.107.55
+    image: adguard/adguardhome:v0.107.56
     container_name: adguard
     ports:
       - 53:53/tcp
       - 53:53/udp
-      - 8680:80
-    # volumes:
-    #   - ./ubuntu_data:/data
+      - 8480:80
+    volumes:
+      - adguard_data_conf:/opt/adguardhome/conf
+      - adguard_data_work:/opt/adguardhome/work
     restart: unless-stopped
     networks:
       - internal
       - web
+
+volumes:
+  adguard_data_conf: {}
+  adguard_data_work: {}
 
 networks:
   internal:

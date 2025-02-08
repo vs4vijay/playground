@@ -1,0 +1,51 @@
+name: dotnet CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      # - name: Check formatting
+      #   continue-on-error: true
+      #   id: checkFormatting
+      #   run: |
+      #     dotnet format whitespace --no-restore --verify-no-changes
+      #     dotnet format style --no-restore --verify-no-changes
+
+      # - name: Fix formatting
+      #   if: steps.checkFormatting.outcome == 'failure'
+      #   run: |
+      #     git config user.name "Github Action" &&
+      #     git config user.email "dotnet@users.noreply.github.com" &&
+      #     dotnet format --no-restore && 
+      #     git commit -am "Fixes formatting" &&
+      #     git push origin HEAD:${{github.event.pull_request.head.ref}}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and Test
+        run: dotnet test -c Release --verbosity minimal

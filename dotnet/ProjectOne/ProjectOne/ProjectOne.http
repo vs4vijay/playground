@@ -6,7 +6,18 @@ Accept: application/json
 ###
 
 
-GET {{API_ENDPOINT}}/api/v1/Projects
+GET {{API_ENDPOINT}}/api/v1/projects
 Accept: application/json
+
+###
+
+
+
+POST {{API_ENDPOINT}}/api/v1/projects
+Content-Type: application/json
+
+{
+  "name": "ProjectOne"
+}
 
 ###

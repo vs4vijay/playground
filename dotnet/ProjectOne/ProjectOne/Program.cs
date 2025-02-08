@@ -1,4 +1,7 @@
 using ProjectOne.Data;
+using ProjectOne.Services;
+using Microsoft.Extensions.Logging;
+using ProjectOne.Interfaces; // Add this line
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ProjectContext>();
+
+// Register ProjectService with the dependency injection container
+builder.Services.AddScoped<IProjectService, ProjectService>();
+
+// Add logging service
+builder.Services.AddLogging(); // Add this line
 
 // Add OpenAPI/Swagger document
 builder.Services.AddEndpointsApiExplorer();

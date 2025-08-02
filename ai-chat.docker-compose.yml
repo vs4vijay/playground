@@ -5,6 +5,7 @@
 services:
   ollama:
     image: ollama/ollama:latest
+    # image: ollama/ollama:rocm # For AMD GPUs
     container_name: ollama
     entrypoint: ["/bin/sh", "-c"]
     command:
@@ -18,6 +19,10 @@ services:
       - "127.0.0.1:11434:11434"
     volumes:
       - ollama:/root/.ollama
+    devices:
+      # For AMD GPUs
+      # - /dev/kfd:/dev/kfd
+      # - /dev/dri:/dev/dri
     restart: unless-stopped
     networks:
       - internal
@@ -28,12 +33,16 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     container_name: openwebui
     environment:
-      - WEBUI_AUTH=False
+      - ENABLE_SIGNUP=False # Comment this to create an admin user, then uncomment to disable signup
+      - WEBUI_SECRET_KEY=supersecretkey
       - RAG_EMBEDDING_ENGINE=ollama
       - AUDIO_STT_ENGINE=openai
-      # - ENABLE_SIGNUP=False
+      - OLLAMA_BASE_URL=http://ollama:11434
+      # - WEBUI_AUTH=False
       # - OLLAMA_PROXY_URL=
-      # - OLLAMA_API_BASE_URL=http://host.docker.internal:11434/api
+      # - OLLAMA_BASE_URL=http://host.docker.internal:11434
+    depends_on:
+      - ollama
     ports:
       - "127.0.0.1:9300:8080"
     volumes:

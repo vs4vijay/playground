@@ -1,11 +1,17 @@
-version: "3.8"
+# Host on subdomain, Below Caddy Config:
+# hass.$DOMAIN:443 {
+#   route /* {
+#     authorize with admin_policy
+#     reverse_proxy hass:8123
+#   }
+# }
 
 services:
   init-hass-config:
     image: busybox
     container_name: init-hass-config
     # command: sh -c "mkdir -p /config && touch /config/configuration.yml"
-    entrypoint: ["/bin/sh","-c"]
+    entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         echo "[+] Creating hass config"
@@ -14,6 +20,12 @@ services:
 
         tee /config/configuration.yaml <<EOF
           default_config:
+
+          # config if using reverse proxy
+          http:
+            use_x_forwarded_for: true
+            trusted_proxies:
+              - 172.19.0.0/16
           
           homeassistant:
             name: viz_hass
@@ -52,7 +64,7 @@ services:
     restart: "no"
 
   home-assistant:
-    image: "ghcr.io/home-assistant/home-assistant:2024.10.1"
+    image: "ghcr.io/home-assistant/home-assistant:2025.5"
     container_name: hass
     ports:
       - "8123:8123"

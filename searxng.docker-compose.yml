@@ -1,9 +1,142 @@
 services:
+  searxng-config:
+    image: alpine:latest
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "[+] Creating searxng config"
+
+        tee /etc/searxng/settings.yml <<EOF
+          # SearXNG settings.yml
+          general:
+            debug: false
+            instance_name: 'SearXNG'
+            contact_url: false
+            enable_metrics: true
+
+          brand:
+            new_issue_url: ''
+            docs_url: ''
+            public_instances: ''
+            wiki_url: ''
+            issue_url: ''
+
+          search:
+            safe_search: 0
+            autocomplete: ''
+            default_lang: ''
+            ban_time_on_fail: 5
+            max_ban_time_on_fail: 120
+            formats:
+              - html
+              - json
+
+          server:
+            port: 8080
+            bind_address: '0.0.0.0'
+            secret_key: '$(openssl rand -hex 32)'
+            base_url: false
+            image_proxy: false
+            default_http_headers:
+              X-Content-Type-Options: nosniff
+              X-XSS-Protection: 1; mode=block
+              X-Download-Options: noopen
+              X-Robots-Tag: noindex, nofollow
+              Referrer-Policy: no-referrer
+
+          ui:
+            static_use_hash: false
+            default_locale: ''
+            query_in_title: false
+            infinite_scroll: false
+            center_alignment: false
+            cache_url: https://web.archive.org/web/
+            default_theme: simple
+            theme_args:
+              simple_style: auto
+
+          # Redis URL to connect to redis server
+          # redis:
+          #   url: redis://redis:6379/0
+
+          outgoing:
+            request_timeout: 3.0
+            useragent_suffix: ''
+            pool_connections: 100
+            pool_maxsize: 20
+            enable_http2: true
+
+          # Enabled engines
+          engines:
+            - name: google
+              engine: google
+              shortcut: g
+              use_mobile_ui: false
+
+            - name: bing
+              engine: bing
+              shortcut: bi
+
+            - name: duckduckgo
+              engine: duckduckgo
+              shortcut: ddg
+
+            - name: wikipedia
+              engine: wikipedia
+              shortcut: wp
+              base_url: 'https://{language}.wikipedia.org/'
+
+            - name: currency
+              engine: currency_convert
+              categories: general
+              shortcut: cc
+
+            - name: github
+              engine: github
+              shortcut: gh
+
+            - name: stackoverflow
+              engine: stackoverflow
+              shortcut: so
+
+            - name: youtube
+              engine: youtube_noapi
+              shortcut: yt
+
+            - name: reddit
+              engine: reddit
+              shortcut: re
+
+            - name: twitter
+              engine: twitter
+              shortcut: tw
+
+          doi_resolvers:
+            oadoi.org: 'https://oadoi.org/'
+            doi.org: 'https://dx.doi.org/'
+            doai.io: 'https://dissem.in/'
+            sci-hub.se: 'https://sci-hub.se/'
+
+          default_doi_resolver: 'oadoi.org'
+        EOF
+
+        echo "[+] Created searxng config"
+
+        pwd
+        ls -all
+        ls -all /etc/searxng
+        tree /etc/searxng
+
+        cat /etc/searxng/settings.yml
+    restart: "no"
+    volumes:
+      - searxng-config:/etc/searxng:rw
+
   searxng:
     container_name: searxng
     image: docker.io/searxng/searxng:latest
     ports:
-      - "127.0.0.1:3002:8080"
+      - "127.0.0.1:8348:8080"
     volumes:
       - searxng-config:/etc/searxng:rw
       - searxng-data:/var/cache/searxng:rw
@@ -13,6 +146,8 @@ services:
     networks:
       - internal
       - web
+    depends_on:
+      - searxng-config
 
 volumes:
   searxng-config:

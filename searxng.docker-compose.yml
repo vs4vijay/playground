@@ -1,0 +1,25 @@
+services:
+  searxng:
+    container_name: searxng
+    image: docker.io/searxng/searxng:latest
+    ports:
+      - "127.0.0.1:3002:8080"
+    volumes:
+      - searxng-config:/etc/searxng:rw
+      - searxng-data:/var/cache/searxng:rw
+    environment:
+      - SEARXNG_BASE_URL=https://${SEARXNG_HOSTNAME:-localhost}/
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+volumes:
+  searxng-config:
+  searxng-data:
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

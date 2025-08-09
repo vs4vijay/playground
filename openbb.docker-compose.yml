@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  openbb:
+    image: ghcr.io/openbb-finance/openbb-platform:latest
+    container_name: openbb
+    # ports:
+    #   - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web
+    external: true

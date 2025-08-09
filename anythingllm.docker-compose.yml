@@ -1,0 +1,38 @@
+services:
+  # Host on subdomain
+  anythingllm:
+    image: mintplexlabs/anythingllm:latest
+    container_name: anythingllm
+    environment:
+      - STORAGE_DIR=/app/server/storage
+      - LLM_PROVIDER=ollama
+      - OLLAMA_BASE_PATH=http://ollama:11434
+      - EMBEDDING_ENGINE=ollama
+      - EMBEDDING_BASE_PATH=http://ollama:11434
+      - EMBEDDING_MODEL_PREF=nomic-embed-text:latest
+      - EMBEDDING_MODEL_MAX_CHUNK_LENGTH=8192
+      - VECTOR_DB=lancedb
+      - WHISPER_PROVIDER=local
+      - TTS_PROVIDER=native
+      - JWT_SECRET=KEEP_THIS_SECRET_VERY_SECURE123
+    ports:
+      - "127.0.0.1:3001:3001"
+    volumes:
+      - anythingllm-storage:/app/server/storage
+      # - anythingllm-env:/app/server/.env
+    cap_add:
+      - SYS_ADMIN
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+volumes:
+  anythingllm-storage:
+  anythingllm-env:
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

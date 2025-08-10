@@ -167,7 +167,7 @@ services:
     networks:
       - web
     environment:
-      # TODO: Create below env vars
+      # TODO: Create below env vars, and remove from here
       DOMAIN: ${DOMAIN}
       AUTHP_ADMIN_USER: ${ADMIN_USER}
       AUTHP_ADMIN_EMAIL: "${ADMIN_EMAIL}"

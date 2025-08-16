@@ -1,0 +1,34 @@
+services:
+  comfyui:
+    # image: ghcr.io/ai-dock/comfyui:latest-rocm
+    image: yanwk/comfyui-boot:rocm
+    container_name: comfyui
+    environment:
+      - TEST=
+    ports:
+      - "127.0.0.1:8188:8188"
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+    # Add Below For AMD GPUs
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+    ipc: host
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+      - label:disable
+
+volumes:
+  comfyui:
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

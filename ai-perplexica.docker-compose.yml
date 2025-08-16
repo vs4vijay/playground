@@ -1,0 +1,26 @@
+services:
+  perplexica:
+    image: itzcrazykns1337/perplexica:v1.10.2
+    # image: itzcrazykns1337/perplexica:main
+    container_name: perplexica
+    environment:
+      - SEARXNG_API_URL=http://searxng:8080
+    ports:
+      - "127.0.0.1:9393:3000"
+    restart: unless-stopped
+    volumes:
+      - perplexica-data:/home/perplexica/data
+      - perplexica-uploads:/home/perplexica/uploads
+    networks:
+      - internal
+      - web
+
+volumes:
+  perplexica-data:
+  perplexica-uploads:
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

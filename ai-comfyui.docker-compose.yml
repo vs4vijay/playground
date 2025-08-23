@@ -13,7 +13,7 @@ services:
       - internal
       - web
     volumes:
-      - /root/models/checkpoints:/root/ComfyUI/models/checkpoints
+      - /root/models:/root/ComfyUI/models
     # Add Below For AMD GPUs
     devices:
       - /dev/kfd

@@ -2,6 +2,7 @@ services:
   comfyui:
     # image: ghcr.io/ai-dock/comfyui:latest-rocm
     image: yanwk/comfyui-boot:rocm
+    # image: frefrik/comfyui-flux:latest
     container_name: comfyui
     environment:
       - TEST=
@@ -11,6 +12,8 @@ services:
     networks:
       - internal
       - web
+    volumes:
+      - /root/models/checkpoints:/root/ComfyUI/models/checkpoints
     # Add Below For AMD GPUs
     devices:
       - /dev/kfd

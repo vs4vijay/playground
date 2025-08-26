@@ -1,0 +1,46 @@
+# Usage
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.ollama.rule=Host(`ollama.${ROOT_DOMAIN}`)
+    #   - traefik.http.routers.ollama.tls=true
+    #   - traefik.http.routers.ollama.entrypoints=websecure
+    #   - traefik.http.routers.ollama.tls.certresolver=resolver
+    #   - traefik.http.services.ollama.loadbalancer.server.port=11434
+
+name: traefik
+
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:v2.11
+    restart: unless-stopped
+    command:
+      - --log.level=DEBUG
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.resolver.acme.dnschallenge=true
+      - --certificatesresolvers.resolver.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.resolver.acme.dnschallenge.resolvers=1.1.1.1,1.0.0.1
+      - --certificatesresolvers.resolver.acme.email=${ADMIN_EMAIL}
+      - --certificatesresolvers.resolver.acme.storage=/letsencrypt/acme.json
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    ports:
+      #- "80:80"
+      - "443:443"
+      - "8081:8080" # traefik dashboard
+    volumes:
+      - ${APP_DATA}/core/traefik/letsencrypt:/letsencrypt
+      #- /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

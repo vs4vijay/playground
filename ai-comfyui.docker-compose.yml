@@ -6,6 +6,7 @@ services:
     container_name: comfyui
     environment:
       - TEST=
+      # - CLI_ARGS=--use-pytorch-cross-attention
     ports:
       - "127.0.0.1:8188:8188"
     restart: unless-stopped
@@ -13,7 +14,11 @@ services:
       - internal
       - web
     volumes:
-      - /root/models:/root/ComfyUI/models
+      - /root/comfyui/models:/root/.cache/ComfyUI
+      - /root/comfyui/input:/root/ComfyUI/input
+      - /root/comfyui/output:/root/ComfyUI/output
+      # OR
+      # - /root/comfyui_root:/root
     # Add Below For AMD GPUs
     devices:
       - /dev/kfd

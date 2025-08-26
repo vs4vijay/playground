@@ -1,3 +1,4 @@
+# To generate password hash: `authelia crypto hash generate argon2`
 services:
   authelia:
     image: "authelia/authelia"
@@ -7,6 +8,8 @@ services:
     command:
       - |
         set -x
+
+        mkdir -p /config
 
         echo "[+] Creating configuration.yml"
         tee /config/configuration.yml <<EOF
@@ -70,11 +73,9 @@ services:
           users:
             authelia:
               disabled: false
-              displayname: 'Authelia User'
-              # Password is authelia
-              password: '${ADMIN_PASSWORD_HASH}'
-              # password: '$6$rounds=50000$BpLnfgDsc2WD8F2q$Zis.ixdg9s/UOJYrs56b5QEZFiZECu0qZVNsIYxBaNJ7ucIL.nlxVCT5tqh8KHG8X4tlwCFm5r6NTOZZ5qRFN/'
+              displayname: 'Admin'
               email: '${ADMIN_EMAIL}'
+              password: '$(authelia crypto hash generate argon2 --password "${ADMIN_PASSWORD}" | tail -n1 | cut -d' ' -f2)'
               groups:
                 - 'admins'
                 - 'dev'
@@ -84,7 +85,7 @@ services:
     environment:
       - DOMAIN=${DOMAIN}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - JWT_CRYPTO_KEY=${JWT_CRYPTO_KEY}
       - STORAGE_ENC_KEY=${STORAGE_ENC_KEY}
     ports:

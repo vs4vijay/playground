@@ -2,13 +2,18 @@ services:
   openwebrx:
     image: jketterl/openwebrx:stable
     container_name: openwebrx
+    device_cgroup_rules:
+      - "c 189:* rwm"
     ports:
       - "127.0.0.1:8073:8073"
     volumes:
       - openwebrx_settings:/var/lib/openwebrx
+      - /dev/bus/usb:/dev/bus/usb
     restart: unless-stopped
     networks:
       - web
+    tmpfs:
+      - /tmp/openwebrx
 
 volumes:
   openwebrx_settings: {}

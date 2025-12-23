@@ -1,0 +1,18 @@
+services:
+  openwebrx:
+    image: jketterl/openwebrx:stable
+    container_name: openwebrx
+    ports:
+      - "127.0.0.1:8073:8073"
+    volumes:
+      - openwebrx_settings:/var/lib/openwebrx
+    restart: unless-stopped
+    networks:
+      - web
+
+volumes:
+  openwebrx_settings: {}
+
+networks:
+  web:
+    name: web

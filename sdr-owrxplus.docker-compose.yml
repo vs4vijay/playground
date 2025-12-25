@@ -1,0 +1,24 @@
+services:
+  owrxplus:
+    image: "slechev/openwebrxplus-softmbe:latest"
+    container_name: owrx-mbe
+    ports:
+      - "127.0.0.1:8073:8073"
+    environment:
+      TZ: Asia/Kolkata
+      OPENWEBRX_ADMIN_USER: admin
+      OPENWEBRX_ADMIN_PASSWORD: admin
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    # volumes:
+    #   - /opt/owrx-docker/etc:/etc/openwebrx
+    #   - /opt/owrx-docker/var:/var/lib/openwebrx
+    tmpfs:
+      - /tmp:mode=1777
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web

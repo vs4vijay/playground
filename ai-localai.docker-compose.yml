@@ -1,0 +1,27 @@
+services:
+  localai:
+    # image: localai/localai:latest
+    image: localai/localai:latest-gpu-hipblas
+    container_name: localai
+    environment:
+      - TEST=
+    ports:
+      - "127.0.0.1:1060:8080"
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+    volumes:
+      # - ./models:/models:cached
+    # Add Below For AMD GPUs
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

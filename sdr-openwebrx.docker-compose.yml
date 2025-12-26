@@ -9,11 +9,11 @@ services:
     volumes:
       - openwebrx_settings:/var/lib/openwebrx
       - /dev/bus/usb:/dev/bus/usb
+    tmpfs:
+      - /tmp/openwebrx
     restart: unless-stopped
     networks:
       - web
-    tmpfs:
-      - /tmp/openwebrx
 
 volumes:
   openwebrx_settings: {}

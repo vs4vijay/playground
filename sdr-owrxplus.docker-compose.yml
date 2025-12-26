@@ -10,14 +10,17 @@ services:
       OPENWEBRX_ADMIN_PASSWORD: admin
     devices:
       - /dev/bus/usb:/dev/bus/usb
-    # volumes:
-    #   - /opt/owrx-docker/etc:/etc/openwebrx
-    #   - /opt/owrx-docker/var:/var/lib/openwebrx
+    volumes:
+      - openwebrx_settings:/var/lib/openwebrx
+      # - /opt/owrx-docker/etc:/etc/openwebrx
     tmpfs:
       - /tmp:mode=1777
     restart: unless-stopped
     networks:
       - web
+
+volumes:
+  openwebrx_settings: {}
 
 networks:
   web:

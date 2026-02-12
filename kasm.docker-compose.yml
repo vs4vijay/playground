@@ -2,8 +2,8 @@
 # TODO: mkdir -p /home/ubuntu/data/{kasm_opt,kasm_profiles}
 # 
 # Step 0: Run install wizard from port 3000, Access /kasm if configured behind Caddy
-# Step 1: Access kasm.$DOMAIN on port 443 for Kasm Workspaces
-# User: admin@kasm.local
+# Step 1: Access kasm.$DOMAIN on port 443 for Kasm Workspaces (Try if /kasm with port 443 redirect works first)
+# User: admin@kasm.local, keep default password for first time
 # 
 # route /kasm* {
 #   authorize with admin_policy

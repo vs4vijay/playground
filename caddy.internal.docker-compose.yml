@@ -1,4 +1,5 @@
 # Caddy for Internal Home Network, without Authentication
+# Research for: tls internal
 
 services:
   caddy-internal:

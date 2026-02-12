@@ -28,6 +28,13 @@ services:
                 
                 path /etc/caddy/auth/local/users.json
                 # path {$HOME}/.local/caddy/users.json
+
+                # user newuser {
+                #     name newuser
+                #     email "newuser@${DOMAIN}"
+                #     password "${PASSWORD}"
+                #     roles authp/user
+                # }
               }
           
               authentication portal myportal {

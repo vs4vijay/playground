@@ -73,7 +73,7 @@ services:
                 # with basic auth portal myportal realm local
                 # with api key auth portal myportal realm local
 
-                allow roles authp/admin
+                allow roles authp/admin authp/user
               }
             }
           }

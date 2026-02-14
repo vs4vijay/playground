@@ -41,9 +41,6 @@ services:
     networks:
       - web
 
-volumes:
-  openwebrx_settings: {}
-
 networks:
   web:
     name: web

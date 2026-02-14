@@ -1,0 +1,30 @@
+# Stalwart
+# 
+# Open ports: ufw allow 25 587 465 143 993 110 995 4190 443 8080
+
+services:
+  stalwart:
+    image: stalwartlabs/stalwart:latest
+    container_name: stalwart
+    ports:
+      - "25:25"    # SMTP  (explicit TLS => STARTTLS, Authentication is DISABLED => use port 465/587 instead)
+      - "465:465"  # ESMTP (implicit TLS)
+      - "587:587"  # ESMTP (explicit TLS => STARTTLS)
+      - "143:143"  # IMAP4 (explicit TLS => STARTTLS)
+      - "993:993"  # IMAP4 (implicit TLS)
+      - "110:110"  # POP3 (explicit TLS => STARTTLS)
+      - "995:995"  # POP3 (implicit TLS)
+      - "4190:4190" # ManageSieve (explicit TLS => STARTTLS)
+      - "7443:443"  # Webmail (HTTPS)
+      - "8080:8080"  # Admin Panel (HTTP)
+    environment:
+      - AA=A
+    volumes:
+      - ./data/stalwart:/opt/stalwart
+    restart: always
+    networks:
+      - web
+
+networks:
+  web:
+    name: web

@@ -1,6 +1,22 @@
 # Stalwart
 # 
 # Open ports: ufw allow 25 587 465 143 993 110 995 4190 443 8080
+# 
+# 
+# mail.$DOMAIN:443 {
+#   route /* {
+#     # authorize with admin_policy
+#     # For Admin
+#     # reverse_proxy stalwart:8080
+
+#     # For Admin Panel with TLS
+#     reverse_proxy stalwart:443 {
+#       transport http {
+#         tls_insecure_skip_verify
+#       }
+#     }
+#   }
+# }
 
 services:
   stalwart:
@@ -14,8 +30,8 @@ services:
       - "993:993"  # IMAP4 (implicit TLS)
       - "110:110"  # POP3 (explicit TLS => STARTTLS)
       - "995:995"  # POP3 (implicit TLS)
-      - "4190:4190" # ManageSieve (explicit TLS => STARTTLS)
-      - "7443:443"  # Webmail (HTTPS)
+      # - "4190:4190" # ManageSieve (explicit TLS => STARTTLS)
+      - "7443:443"  # Admin Panel (HTTPS)
       - "8080:8080"  # Admin Panel (HTTP)
     environment:
       - AA=A

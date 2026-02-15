@@ -40,6 +40,19 @@ services:
     restart: always
     networks:
       - web
+  
+  roundcube:
+    image: roundcube/roundcubemail:latest
+    restart: unless-stopped
+    volumes:
+      - ./roundcube/db:/var/roundcube/db
+      - ./roundcube/config/:/var/roundcube/config/
+    environment:
+      - ROUNDCUBEMAIL_DEFAULT_HOST=ssl://mail.emaildomain.com
+      - ROUNDCUBEMAIL_DEFAULT_PORT=993
+      - ROUNDCUBEMAIL_SMTP_SERVER=ssl://mail.emaildomain.com
+      - ROUNDCUBEMAIL_SMTP_PORT=465
+      - ROUNDCUBEMAIL_UPLOAD_MAX_FILESIZE=50M
 
 networks:
   web:

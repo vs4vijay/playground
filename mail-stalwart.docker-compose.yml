@@ -1,0 +1,59 @@
+# Stalwart
+# 
+# Open ports: ufw allow 25 587 465 143 993 110 995 4190 443 8080
+# 
+# 
+# mail.$DOMAIN:443 {
+#   route /* {
+#     # authorize with admin_policy
+#     # For Admin
+#     # reverse_proxy stalwart:8080
+
+#     # For Admin Panel with TLS
+#     reverse_proxy stalwart:443 {
+#       transport http {
+#         tls_insecure_skip_verify
+#       }
+#     }
+#   }
+# }
+
+services:
+  stalwart:
+    image: stalwartlabs/stalwart:latest
+    container_name: stalwart
+    ports:
+      - "25:25"    # SMTP  (explicit TLS => STARTTLS, Authentication is DISABLED => use port 465/587 instead)
+      - "465:465"  # ESMTP (implicit TLS)
+      - "587:587"  # ESMTP (explicit TLS => STARTTLS)
+      - "143:143"  # IMAP4 (explicit TLS => STARTTLS)
+      - "993:993"  # IMAP4 (implicit TLS)
+      - "110:110"  # POP3 (explicit TLS => STARTTLS)
+      - "995:995"  # POP3 (implicit TLS)
+      # - "4190:4190" # ManageSieve (explicit TLS => STARTTLS)
+      - "7443:443"  # Admin Panel (HTTPS)
+      - "8080:8080"  # Admin Panel (HTTP)
+    environment:
+      - AA=A
+    volumes:
+      - ./data/stalwart:/opt/stalwart
+    restart: always
+    networks:
+      - web
+  
+  roundcube:
+    image: roundcube/roundcubemail:latest
+    restart: unless-stopped
+    volumes:
+      - ./roundcube/db:/var/roundcube/db
+      - ./roundcube/config/:/var/roundcube/config/
+    environment:
+      - ROUNDCUBEMAIL_DEFAULT_HOST=ssl://mail.emaildomain.com
+      - ROUNDCUBEMAIL_DEFAULT_PORT=993
+      - ROUNDCUBEMAIL_SMTP_SERVER=ssl://mail.emaildomain.com
+      - ROUNDCUBEMAIL_SMTP_PORT=465
+      - ROUNDCUBEMAIL_UPLOAD_MAX_FILESIZE=50M
+
+networks:
+  web:
+    name: web

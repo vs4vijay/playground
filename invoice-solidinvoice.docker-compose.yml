@@ -1,0 +1,17 @@
+services:
+      
+  solidinvoice:
+    image: solidinvoice/solidinvoice
+    container_name: solidinvoice
+    ports:
+      - '8765:8765'
+    volumes:
+      - /home/viz/data/solidinvoice:/etc/solidinvoice
+    environment:
+      - TEST=TEST
+    networks:
+      - web
+
+networks:
+  web:
+    name: web

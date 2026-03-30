@@ -1,0 +1,22 @@
+services:
+      
+  invoiceninja:
+    image: invoiceninja/invoiceninja-debian
+    container_name: invoiceninja
+    ports:
+      - '5433:80'
+    volumes:
+      - /home/viz/data/invoiceninja:/var/www/html
+    environment:
+      - APP_URL=http://in.localhost:8003/
+      - APP_KEY="<key>"
+      - IN_USER_EMAIL=vs4vijay@hotmail.com
+      - IN_PASSWORD="<password>"
+      # - APP_DEBUG=true
+      # - REQUIRE_HTTPS=false
+    networks:
+      - web
+
+networks:
+  web:
+    name: web

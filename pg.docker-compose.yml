@@ -14,18 +14,24 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres012post
+    networks:
+      - web
       
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
+    user: "$UID:$GID"
     ports:
       - '5433:80'
     volumes:
-      - ./data/pgadmin:/var/lib/pgadmin
+      - /home/ubuntu/data/pgadmin:/var/lib/pgadmin
     environment:
-      - PGADMIN_DEFAULT_EMAIL=vs4vijay@gmail.com
+      - PGADMIN_DEFAULT_EMAIL=vs4vijay@hotmail.com
       - PGADMIN_DEFAULT_PASSWORD=postgres012post
       - PGADMIN_DISABLE_POSTFIX=no
+    networks:
+      - web
 
 networks:
-  dev:
+  web:
+    name: web

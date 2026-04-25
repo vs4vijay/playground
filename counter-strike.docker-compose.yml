@@ -1,4 +1,5 @@
 # support x86 only
+# Open port 27018 for UDP for Counter-Strike server
 
 services:
   counter-strike-init:
@@ -9,7 +10,7 @@ services:
       STEAM_APP_ID: ${STEAM_APP_ID:-90}
       STEAM_INSTALL_DIR: ${STEAM_INSTALL_DIR:-/home/steam/cs}
       CS_ARCHIVE_NAME: ${CS_ARCHIVE_NAME:-valve.zip}
-      FORCE_DOWNLOAD: ${FORCE_DOWNLOAD:-1}
+      FORCE_DOWNLOAD: ${FORCE_DOWNLOAD:-0}
       STEAMCMD_BIN: ${STEAMCMD_BIN:-/home/steam/steamcmd/steamcmd.sh}
       DEBIAN_FRONTEND: noninteractive
     command:
@@ -80,11 +81,12 @@ services:
       counter-strike-init:
         condition: service_completed_successfully
     ports:
-      - "27016:27016" # HTTP
-      - "27018:27018" # UDP Port
-    # environment:
-    #   IP: 192.168.50.123 # Public IP
-    #   PORT: 27018
+      - "27016:27016"     # HTTP
+      - "27018:27018/udp" # UDP Port
+    environment:
+      # Public IP, must needed
+      IP: 192.168.50.123
+      PORT: 27018
     volumes:
       - type: bind
         source: /home/wick/valve.zip

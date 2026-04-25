@@ -1,5 +1,6 @@
 # support x86 only
 # Open port 27018 for UDP for Counter-Strike server
+# mkdir -p /home/ubuntu/cs
 # 
 # Caddy config
 # cs.$DOMAIN:443 {
@@ -22,7 +23,7 @@ services:
     environment:
       STEAM_APP_ID: ${STEAM_APP_ID:-90}
       STEAM_INSTALL_DIR: ${STEAM_INSTALL_DIR:-/home/steam/cs}
-      CS_ARCHIVE_NAME: ${CS_ARCHIVE_NAME:-valve.zip}
+      ARCHIVE_NAME: ${ARCHIVE_NAME:-valve.zip}
       FORCE_DOWNLOAD: ${FORCE_DOWNLOAD:-0}
       STEAMCMD_BIN: ${STEAMCMD_BIN:-/home/steam/steamcmd/steamcmd.sh}
       DEBIAN_FRONTEND: noninteractive
@@ -32,8 +33,8 @@ services:
       - |
         set -euo pipefail
         mkdir -p /output
-        ARCHIVE_PATH="/output/$$CS_ARCHIVE_NAME"
-        TMP_ARCHIVE_PATH="/output/.tmp-$$CS_ARCHIVE_NAME"
+        ARCHIVE_PATH="/output/$$ARCHIVE_NAME"
+        TMP_ARCHIVE_PATH="/output/.tmp-$$ARCHIVE_NAME"
 
         # If Docker or a prior interrupted run left a directory at archive path, clean it.
         if [ -d "$$ARCHIVE_PATH" ]; then
@@ -83,7 +84,7 @@ services:
         mv -f "$$TMP_ARCHIVE_PATH" "$$ARCHIVE_PATH"
         echo "Counter-Strike archive created successfully: $$ARCHIVE_PATH"
     volumes:
-      - "/home/wick:/output"
+      - "/home/wick/cs:/output"
     restart: "no"
 
   counter-strike:
@@ -99,14 +100,14 @@ services:
       - "27018:27018/udp" # UDP Port
     environment:
       # Public IP, must needed
-      IP: 192.168.50.123
+      IP: ${PUBLIC_IP:-192.168.1.123}
       PORT: 27018
     volumes:
       - type: bind
-        source: /home/wick/valve.zip
+        source: /home/wick/cs/valve.zip
         target: /xashds/public/valve.zip
-        bind:
-          create_host_path: false
+        # bind:
+        #   create_host_path: false
     restart: unless-stopped
     networks:
       - web

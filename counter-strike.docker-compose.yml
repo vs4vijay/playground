@@ -1,10 +1,84 @@
 # support x86 only
 
 services:
+  counter-strike-init:
+    container_name: counter-strike-init
+    image: cm2network/steamcmd:latest
+    user: "0:0"
+    environment:
+      STEAM_APP_ID: ${STEAM_APP_ID:-90}
+      STEAM_INSTALL_DIR: ${STEAM_INSTALL_DIR:-/home/steam/cs}
+      CS_ARCHIVE_NAME: ${CS_ARCHIVE_NAME:-valve.zip}
+      FORCE_DOWNLOAD: ${FORCE_DOWNLOAD:-1}
+      STEAMCMD_BIN: ${STEAMCMD_BIN:-/home/steam/steamcmd/steamcmd.sh}
+      DEBIAN_FRONTEND: noninteractive
+    command:
+      - /bin/bash
+      - -lc
+      - |
+        set -euo pipefail
+        mkdir -p /output
+        ARCHIVE_PATH="/output/$$CS_ARCHIVE_NAME"
+        TMP_ARCHIVE_PATH="/output/.tmp-$$CS_ARCHIVE_NAME"
+
+        # If Docker or a prior interrupted run left a directory at archive path, clean it.
+        if [ -d "$$ARCHIVE_PATH" ]; then
+          echo "Found directory at $$ARCHIVE_PATH; removing it so archive can be created."
+          rm -rf "$$ARCHIVE_PATH"
+        fi
+
+        if [ "$$FORCE_DOWNLOAD" = "1" ]; then
+          echo "FORCE_DOWNLOAD=1 set; rebuilding archive at $$ARCHIVE_PATH"
+          rm -f "$$ARCHIVE_PATH"
+        else
+          if [ -s "$$ARCHIVE_PATH" ]; then
+            echo "Archive exists at $$ARCHIVE_PATH; skipping download (set FORCE_DOWNLOAD=1 to rebuild)."
+            exit 0
+          fi
+        fi
+
+        if ! command -v zip >/dev/null 2>&1; then
+          mkdir -p /var/lib/apt/lists/partial
+          apt-get update && apt-get install -y --no-install-recommends zip
+          rm -rf /var/lib/apt/lists/*
+        fi
+
+        if [ ! -x "$$STEAMCMD_BIN" ]; then
+          echo "steamcmd executable not found or not executable at: $$STEAMCMD_BIN" >&2
+          exit 1
+        fi
+
+        mkdir -p "$$STEAM_INSTALL_DIR"
+        chown -R steam:steam "$$STEAM_INSTALL_DIR"
+        export HOME=/home/steam
+        mkdir -p "$$HOME"
+        chown -R steam:steam "$$HOME"
+
+        if command -v runuser >/dev/null 2>&1; then
+          runuser -u steam -- "$$STEAMCMD_BIN" +force_install_dir "$$STEAM_INSTALL_DIR" +login anonymous +app_update "$$STEAM_APP_ID" +quit
+        else
+          su -s /bin/bash steam -c '"$$STEAMCMD_BIN" +force_install_dir "$$STEAM_INSTALL_DIR" +login anonymous +app_update "$$STEAM_APP_ID" +quit'
+        fi
+
+        cd "$$STEAM_INSTALL_DIR"
+        test -d cstrike
+        test -d valve
+
+        rm -f "$$TMP_ARCHIVE_PATH"
+        zip -r "$$TMP_ARCHIVE_PATH" cstrike valve
+        mv -f "$$TMP_ARCHIVE_PATH" "$$ARCHIVE_PATH"
+        echo "Counter-Strike archive created successfully: $$ARCHIVE_PATH"
+    volumes:
+      - "/home/wick:/output"
+    restart: "no"
+
   counter-strike:
     container_name: counter-strike
     image: yohimik/cs-web-server:latest
     # command: [ "+map de_dust", "+maxplayers 14" ]
+    depends_on:
+      counter-strike-init:
+        condition: service_completed_successfully
     ports:
       - "27016:27016" # HTTP
       - "27018:27018" # UDP Port
@@ -12,7 +86,11 @@ services:
     #   IP: 192.168.50.123 # Public IP
     #   PORT: 27018
     volumes:
-      - "/home/wick/valve.zip:/xashds/public/valve.zip"
+      - type: bind
+        source: /home/wick/valve.zip
+        target: /xashds/public/valve.zip
+        bind:
+          create_host_path: false
     restart: unless-stopped
     networks:
       - web

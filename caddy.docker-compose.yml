@@ -170,6 +170,7 @@ services:
     volumes:
       # - caddy-config:/config
       - caddy-data:/data
+      # - /home/ubuntu/data/caddy_data:/data
       # - caddy-logs:/var/log/caddy
     networks:
       - web

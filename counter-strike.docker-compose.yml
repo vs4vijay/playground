@@ -1,0 +1,22 @@
+# support x86 only
+
+services:
+  counter-strike:
+    container_name: counter-strike
+    image: yohimik/cs-web-server:latest
+    # command: [ "+map de_dust", "+maxplayers 14" ]
+    ports:
+      - "27016:27016" # HTTP
+      - "27018:27018" # UDP Port
+    # environment:
+    #   IP: 192.168.50.123 # Public IP
+    #   PORT: 27018
+    volumes:
+      - "/home/wick/valve.zip:/xashds/public/valve.zip"
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web

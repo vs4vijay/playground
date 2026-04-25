@@ -1,5 +1,18 @@
 # support x86 only
 # Open port 27018 for UDP for Counter-Strike server
+# 
+# Caddy config
+# cs.$DOMAIN:443 {
+#   @ws path /websocket
+#   handle @ws {
+#     reverse_proxy counter-strike:27016
+#   }
+
+#   handle {
+#     authorize with admin_policy
+#     reverse_proxy counter-strike:27016
+#   }
+# }
 
 services:
   counter-strike-init:
@@ -75,7 +88,8 @@ services:
 
   counter-strike:
     container_name: counter-strike
-    image: yohimik/cs-web-server:latest
+    # image: yohimik/cs-web-server:latest
+    image: yohimik/cs-web-server-metpamx:latest
     # command: [ "+map de_dust", "+maxplayers 14" ]
     depends_on:
       counter-strike-init:

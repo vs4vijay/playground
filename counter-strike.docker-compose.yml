@@ -2,13 +2,24 @@
 # Open port 27018 for UDP for Counter-Strike server
 # mkdir -p /home/ubuntu/cs
 # 
-# Caddy config
+# Caddy config:
 # cs.$DOMAIN:443 {
 #   @ws path /websocket
 #   handle @ws {
 #     reverse_proxy counter-strike:27016
 #   }
-
+#   # Cache valve.zip for 1 month (still behind auth)
+#   @valve path /valve.zip
+#   handle @valve {
+#     reverse_proxy counter-strike:27016 {
+#       header_down -Cache-Control
+#       header_down -Pragma
+#       header_down -Expires
+#     }
+#     header Cache-Control "private, max-age=2592000"
+#     header ETag "valve-v1"
+#   }
+#   # Everything else protected
 #   handle {
 #     authorize with admin_policy
 #     reverse_proxy counter-strike:27016
@@ -91,7 +102,24 @@ services:
     container_name: counter-strike
     # image: yohimik/cs-web-server:latest
     image: yohimik/cs-web-server-metpamx:latest
-    # command: [ "+map de_dust", "+maxplayers 14" ]
+    command: 
+      - "+hostname ${CS_HOSTNAME:-Vizard Counter-Strike Server}"
+      - "+map de_dust2"
+      - "+maxplayers 14"
+      - "+rcon_password ${ADMIN_PASSWORD:-AdminPasswordHere}"
+      - "+sv_password ${JOIN_PASSWORD:-}"
+      - "+mp_timelimit 20"
+      - "+mp_roundtime 5"
+      - "+mp_freezetime 5"
+      - "+yb_join_after_player 1"
+      - "+yb_quota_mode fill"
+      - "+yb_quota 6"
+      - "+yb_difficulty 2"
+      - "+yb_autovacate 1"
+      - "+yb_autovacate_keep_slots 1"
+      - "+yb_kick_after_player_connect 1"
+      # - "amxmodmenu"
+      # - "yb add"
     depends_on:
       counter-strike-init:
         condition: service_completed_successfully
@@ -99,7 +127,7 @@ services:
       - "27016:27016"     # HTTP
       - "27018:27018/udp" # UDP Port
     environment:
-      # Public IP, must needed
+      # Public IP, must needed for server to advertise itself correctly
       IP: ${PUBLIC_IP:-192.168.1.123}
       PORT: 27018
     volumes:

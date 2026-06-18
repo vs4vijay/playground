@@ -1,8 +1,10 @@
 services:
   comfyui:
     # image: ghcr.io/ai-dock/comfyui:latest-rocm
-    image: yanwk/comfyui-boot:rocm
     # image: frefrik/comfyui-flux:latest
+    image: yanwk/comfyui-boot:cu130-slim-v2
+    # For AMD GPUs
+    # image: yanwk/comfyui-boot:rocm
     container_name: comfyui
     environment:
       - TEST=
@@ -14,15 +16,19 @@ services:
       - internal
       - web
     volumes:
-      - /root/comfyui/models:/root/.cache/ComfyUI
-      - /root/comfyui/input:/root/ComfyUI/input
-      - /root/comfyui/output:/root/ComfyUI/output
+      - ~/comfyui/models:/root/.cache/ComfyUI
+      - ~/comfyui/input:/root/ComfyUI/input
+      - ~/comfyui/output:/root/ComfyUI/output
+      # mkdir -p ~/comfyui/{models,input,output}
+      # - /root/comfyui/models:/root/.cache/ComfyUI
+      # - /root/comfyui/input:/root/ComfyUI/input
+      # - /root/comfyui/output:/root/ComfyUI/output
       # OR
       # - /root/comfyui_root:/root
-    # Add Below For AMD GPUs
-    devices:
-      - /dev/kfd
-      - /dev/dri
+    # For AMD GPUs
+    # devices:
+    #   - /dev/kfd
+    #   - /dev/dri
     group_add:
       - video
     ipc: host

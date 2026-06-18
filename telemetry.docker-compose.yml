@@ -1,0 +1,31 @@
+name: telemetry
+
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: otel-collector
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ./config.yaml:/etc/otelcol/config.yaml
+    restart: unless-stopped
+    networks:
+      - internal
+
+  parseable:
+    image: quay.io/parseablehq/parseable:latest
+    container_name: parseable
+    command: parseable local-store
+    ports:
+      - "9400:8000"
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

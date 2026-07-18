@@ -1,21 +1,15 @@
+name: keycloak
+
 services:
-  # postgres:
-  #   image: postgres
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   environment:
-  #     POSTGRES_DB: keycloak
-  #     POSTGRES_USER: keycloak
-  #     POSTGRES_PASSWORD: postgres012post
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.5.3
+    image: quay.io/keycloak/keycloak:26.7.0
     container_name: keycloak
     command: >
       start-dev
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: password012pass
+      KC_BOOTSTRAP_ADMIN_PASSWORD: pass012word
       # DB_VENDOR: POSTGRES
       # DB_ADDR: postgres
       # DB_DATABASE: keycloak
@@ -26,15 +20,25 @@ services:
       # JDBC_PARAMS: "ssl=true"
     ports:
       - 8080:8080
+    networks:
+      - web
     # depends_on:
     #   - postgres
 
-    networks:
-      - web
+    # postgres:
+    #   image: postgres
+    #   volumes:
+    #     - postgres_data:/var/lib/postgresql/data
+    #   environment:
+    #     POSTGRES_DB: keycloak
+    #     POSTGRES_USER: keycloak
+    #     POSTGRES_PASSWORD: postgres012post
+    # networks:
+    #   - web
 
-volumes:
-  postgres_data:
-    driver: local
+# volumes:
+#   postgres_data:
+#     driver: local
 
 networks:
   web:

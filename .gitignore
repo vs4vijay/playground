@@ -27,3 +27,5 @@ __pycache__/
 target/
 
 .env
+
+.DS_Store

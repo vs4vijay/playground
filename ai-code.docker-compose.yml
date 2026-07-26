@@ -1,25 +1,24 @@
+# mkdir -p "${HOME}/workspaces" "${HOME}/.openhands"
+
+name: openhands
+
 services:
-  openhands:
-    image: docker.all-hands.dev/all-hands-ai/openhands:0.18
-    container_name: openhands
+  agent-canvas:
+    image: ghcr.io/openhands/agent-canvas:1.5.2
+    container_name: agent-canvas
+    stdin_open: true
+    tty: true
     environment:
-      - SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.all-hands.dev/all-hands-ai/runtime:0.18-nikolaik
-      - LOG_ALL_EVENTS=true
+      TEST: "bbb"
     ports:
-      - "127.0.0.1:6300:3000"
+      - "8600:8000"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - openhands-state:/.openhands-state
+      - "${HOME}/.openhands:/home/openhands/.openhands"
+      - "${HOME}/workspaces:/workspaces"
     restart: unless-stopped
     networks:
-      - internal
       - web
 
-volumes:
-  openhands-state:
-
 networks:
-  internal:
-    name: internal
   web:
     name: web

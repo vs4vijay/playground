@@ -1,0 +1,78 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+#
+# Hermes Agent on Render, pre-baked with Render tools.
+# https://github.com/NousResearch/hermes-agent
+#
+# Single web service built from the local Dockerfile, which extends the
+# upstream Hermes image with:
+#   - The official render-oss/skills bundle, pinned at a commit
+#   - The Render MCP server pre-registered in config.yaml at boot
+#     with the full MCP tool catalog available to the provided API key
+#
+# Inside the container the gateway runs in the foreground and the
+# dashboard runs as a background side-process (HERMES_DASHBOARD=1).
+# Render's public URL serves the dashboard on port 10000; persistent
+# state lives on a 5 GB disk mounted at /opt/data (HERMES_HOME default).
+#
+# To upgrade Hermes: bump HERMES_IMAGE in the Dockerfile and redeploy.
+# To upgrade Render skills: bump RENDER_SKILLS_REF and redeploy.
+
+services:
+  - type: web
+    name: hermes
+    runtime: docker
+    region: oregon
+    plan: standard
+    # Render builds the image from this repo's Dockerfile on every deploy.
+    # The Dockerfile FROMs the pinned upstream Hermes image, adds Render
+    # tooling + the skill bundle, and sets ENTRYPOINT to our bootstrap wrapper — so
+    # no `dockerCommand` override is needed here.
+    dockerfilePath: ./Dockerfile
+    autoDeployTrigger: off
+    healthCheckPath: /api/status
+
+    disk:
+      name: hermes-data
+      mountPath: /opt/data
+      sizeGB: 5
+
+    envVars:
+      # The Blueprint only carries vars that change how the container boots
+      # or that wire up the bundled Render tools. All provider keys, tool
+      # keys, and chat platform tokens are set through the Hermes dashboard
+      # (API Keys tab), which writes them to /opt/data/.env on the disk.
+
+      # Dashboard side-process. The entrypoint backgrounds `hermes dashboard`
+      # before exec'ing `gateway run` whenever HERMES_DASHBOARD is truthy.
+      # HERMES_DASHBOARD_HOST=0.0.0.0 makes the entrypoint pass --insecure
+      # so the dashboard accepts non-loopback binds.
+      - key: HERMES_DASHBOARD
+        value: "1"
+      - key: HERMES_DASHBOARD_HOST
+        value: "0.0.0.0"
+      - key: HERMES_DASHBOARD_PORT
+        value: "10000"
+      # Exposes a Chat tab in the dashboard that embeds the full Hermes TUI
+      # over a server-side PTY + xterm.js. This is how you chat with the
+      # agent without a real terminal on the host side.
+      - key: HERMES_DASHBOARD_TUI
+        value: "1"
+
+      # Generated once at first deploy. Reuse this value as API_SERVER_KEY
+      # in the dashboard if you later opt into the OpenAI-compatible API
+      # server (API_SERVER_ENABLED=true).
+      - key: HERMES_GATEWAY_TOKEN
+        generateValue: true
+
+      # Bearer token for the pre-registered Render MCP server. Generate
+      # at https://dashboard.render.com/u/*/settings#api-keys and paste
+      # into the dashboard's Environment tab. The boot-time patcher
+      # reads ${RENDER_MCP_API_KEY} into config.yaml lazily, so you can
+      # rotate by editing the env var and restarting — no rebuild needed.
+      #
+      # Named `RENDER_MCP_API_KEY` rather than the stock `RENDER_API_KEY`
+      # to avoid accidental auto-auth if someone later installs the
+      # `render` CLI. This is the same kind of Render API key; the Render
+      # account role behind the key determines what the agent can do.
+      - key: RENDER_MCP_API_KEY
+        sync: false

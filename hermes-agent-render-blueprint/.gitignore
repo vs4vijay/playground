@@ -1,0 +1,39 @@
+# Local env file with real secrets. Never commit.
+.env
+.env.local
+.env.*.local
+
+# SSH keys, certificates, anything secret-shaped. Never commit.
+*.pem
+*.key
+*-key
+*-key.pub
+*_key
+*_key.pub
+id_*
+*.cert
+*.crt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+
+# Node (in case anyone clones the upstream repo into here for local poking)
+node_modules/
+npm-debug.log*
+
+# Local upstream clone used during template development.
+.hermes-upstream/

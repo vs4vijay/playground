@@ -22,7 +22,7 @@ services:
     name: hermes
     runtime: docker
     region: oregon
-    plan: starter
+    plan: free
     # Render builds the image from this repo's Dockerfile on every deploy.
     # The Dockerfile FROMs the pinned upstream Hermes image, adds Render
     # tooling + the skill bundle, and sets ENTRYPOINT to our bootstrap wrapper — so

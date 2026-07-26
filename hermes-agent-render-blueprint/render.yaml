@@ -31,10 +31,10 @@ services:
     autoDeployTrigger: off
     healthCheckPath: /api/status
 
-    disk:
-      name: hermes-data
-      mountPath: /opt/data
-      sizeGB: 5
+    # disk:
+    #   name: hermes-data
+    #   mountPath: /opt/data
+    #   sizeGB: 5
 
     envVars:
       # The Blueprint only carries vars that change how the container boots

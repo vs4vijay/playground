@@ -18,8 +18,8 @@ services:
       HERMES_DASHBOARD_BASIC_AUTH_SECRET: "someRandomSecret123"
       HERMES_DASHBOARD_PUBLIC_URL: "http://localhost:9119"
     ports:
-      - "8642:8642"
-      - "9119:9119"
+      - "127.0.0.1:8642:8642"
+      - "127.0.0.1:9119:9119"
     volumes:
       - ${HOME}/my_data/hermes:/opt/data
     restart: unless-stopped

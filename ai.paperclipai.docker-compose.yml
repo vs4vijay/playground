@@ -1,0 +1,48 @@
+# ai-paperclip.docker-compose.yml — Paperclip (https://github.com/paperclipai/paperclip)
+#
+# Uses the official pre-built image ghcr.io/paperclipai/paperclip:latest.
+# No local build — just pull and run. Handles embedded Postgres, uid remap,
+# first-boot bootstrap, and migrations automatically.
+#
+# Usage:
+#   docker compose -f ai-paperclip.docker-compose.yml up -d
+#   open http://localhost:3100   # first run: create admin account
+#
+# Data persisted in ~/my_data/paperclip/ (config, DB, uploads, workspaces).
+# Port 3100 bound to loopback only; change to "3100:3100" for LAN access.
+#
+# mkdir -p ~/my_data/paperclip
+
+name: paperclip
+
+services:
+  paperclip:
+    image: ghcr.io/paperclipai/paperclip:latest
+    container_name: paperclip
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3100:3100"
+    environment:
+      HOST: "0.0.0.0"
+      PAPERCLIP_HOME: "/paperclip"
+      PAPERCLIP_DEPLOYMENT_MODE: "authenticated"
+      PAPERCLIP_DEPLOYMENT_EXPOSURE: "private"
+      PAPERCLIP_PUBLIC_URL: "${PAPERCLIP_PUBLIC_URL:-http://localhost:3100}"
+      BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:-VerySecureSecretHere}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      ANTHROPIC_BASE_URL: "${ANTHROPIC_BASE_URL:-}"
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
+      USER_UID: "${PAPERCLIP_UID:-1000}"
+      USER_GID: "${PAPERCLIP_GID:-1000}"
+    volumes:
+      - ${HOME}/my_data/paperclip:/paperclip
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+  web:
+    name: web

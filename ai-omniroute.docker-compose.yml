@@ -1,0 +1,25 @@
+# mkdir -p ~/my_data/omniroute
+name: omniroute
+
+services:
+  omniroute:
+    image: diegosouzapw/omniroute
+    container_name: omniroute
+    environment:
+      - PORT=11111
+    ports:
+      - "127.0.0.1:11111:11111"
+    volumes:
+      - ${HOME}/my_data/omniroute:/app/data
+    restart: unless-stopped
+    networks:
+      - internal
+      - web
+
+networks:
+  internal:
+    name: internal
+    # external: true
+  web:
+    name: web
+    # external: true

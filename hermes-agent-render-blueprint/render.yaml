@@ -52,6 +52,11 @@ services:
         value: "0.0.0.0"
       - key: HERMES_DASHBOARD_PORT
         value: "10000"
+      - key: HERMES_DASHBOARD_BASIC_AUTH_USERNAME
+        value: "viz"
+      - key: HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
+        value: "hermes012agent"
+      
       # Exposes a Chat tab in the dashboard that embeds the full Hermes TUI
       # over a server-side PTY + xterm.js. This is how you chat with the
       # agent without a real terminal on the host side.

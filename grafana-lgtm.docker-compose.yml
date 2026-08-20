@@ -1,0 +1,20 @@
+name: grafana-lgtm
+
+services:
+  grafana-lgtm:
+    image: grafana/otel-lgtm
+    container_name: grafana-lgtm
+    environment:
+      - "TEST=abc"
+    ports:
+      - "127.0.0.1:63000:3000"
+      - "127.0.0.1:64317:4317"
+      - "127.0.0.1:64318:4318"
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web
+    external: true

@@ -1,0 +1,22 @@
+# mkdir -p "${HOME}/workspaces"
+
+name: paseo
+
+services:
+  paseo:
+    image: ghcr.io/getpaseo/paseo:latest
+    container_name: paseo
+    environment:
+      PASEO_PASSWORD: "paseo012"
+      # PASEO_HOSTNAMES: "paseo.example.com,.lan"
+    ports:
+      - "6767:6767"
+    # volumes:
+      - "${HOME}/workspaces:/workspaces"
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  web:
+    name: web

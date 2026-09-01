@@ -3,7 +3,7 @@ name: omniroute
 
 services:
   omniroute:
-    image: diegosouzapw/omniroute
+    image: diegosouzapw/omniroute:3.8.49
     container_name: omniroute
     environment:
       - PORT=11111

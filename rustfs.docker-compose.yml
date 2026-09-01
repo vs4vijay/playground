@@ -10,8 +10,8 @@ services:
       - RUSTFS_ACCESS_KEY=admin
       - RUSTFS_SECRET_KEY=rust012fs
     ports:
-      - "127.0.0.1:9000:9000"
-      - "127.0.0.1:9001:9001"
+      - "127.0.0.1:9900:9000"
+      - "127.0.0.1:9901:9001"
     volumes:
       - ${HOME}/my_data/rustfs:/data
     restart: unless-stopped

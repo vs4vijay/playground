@@ -1,0 +1,145 @@
+# NOTE 2026-09-13: host is aarch64 (ARM, Oracle A1).
+# jives/hlds:cstrike, bordeux, marcel are x86-only (HLDS 32-bit).
+# Native `docker compose pull/up` fails with: no matching manifest for linux/arm64/v8.
+# Workaround tried: `docker pull --platform linux/amd64 <image>` downloads OK,
+# but running under qemu-i386 hangs (uname test timed out) - too slow/unstable for FPS.
+# RECOMMENDATION: run this file on x86_64 Oracle shape (E2/E3/E4), then it works as-is on port 55555.
+# All passwords via ./cs16.env, defaults czero#123. Run only ONE service at a time (same port 55555).
+services:
+  # VANILLA CLASSIC - private 6-12 players (ACTIVE)
+  cs16-vanilla:
+    image: jives/hlds:cstrike
+    platform: linux/amd64 # required on ARM hosts, native on x86_64
+    container_name: cs16-vanilla
+    restart: unless-stopped
+    env_file:
+      - ./cs16.env
+    ports:
+      - "55555:55555/udp"
+      - "55555:55555/tcp"
+      - "26900:26900/udp"
+    volumes:
+      - /home/ubuntu/my_data/cs16/vanilla/config:/temp/config
+      - /home/ubuntu/my_data/cs16/vanilla/mods:/temp/mods
+    command: >-
+      +ip 0.0.0.0 +port 55555
+      +maxplayers 12 +map de_dust2
+      +hostname "Friends CS1.6 Vanilla"
+      +sv_password "${SV_PASSWORD:-czero#123}"
+      +rcon_password "${RCON_PASSWORD:-czero#123}"
+      +log on
+
+  # BORDEUX ReHLDS + AMXModX + Metamod-R (COMMENTED - uncomment to use instead of vanilla)
+  # NOTE: uses same port 55555, run only one server at a time:
+  #   docker compose -f ~/cs16.docker-compose.yml up -d cs16-bordeux
+  # cs16-bordeux:
+  #   image: ghcr.io/bordeux/cstrike-server:latest
+  #   platform: linux/amd64 # x86-only, same ARM note as above
+  #   container_name: cs16-bordeux
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./cs16.env
+  #   environment:
+  #     SERVER_PORT: "55555"
+  #     SERVER_MAP: "de_dust2"
+  #     SERVER_MAX_PLAYERS: "12"
+  #     SERVER_LAN: "0"
+  #     SERVER_GAME: "cstrike"
+  #     SERVER_PASSWORD: "${SV_PASSWORD:-czero#123}"
+  #     RCON_PASSWORD: "${RCON_PASSWORD:-czero#123}"
+  #     HLTV_ENABLE: "0"
+  #     ENABLE_HTTP_SERVER: "0"
+  #   ports:
+  #     - "55555:55555/udp"
+  #     - "55555:55555/tcp"
+  #   volumes:
+  #     - /home/ubuntu/my_data/cs16/bordeux:/data
+
+  # MARCEL fun server ReGameDLL + AMX + 42 maps + RTV + admin menu (COMMENTED)
+  # NOTE: upstream builds from git, same port 55555, run only one at a time:
+  #   docker compose -f ~/cs16.docker-compose.yml up -d cs16-marcel
+  # ARM STATUS 2026-09-13: also x86-only, same wall as vanilla/bordeux.
+  #   Base FROM steamcmd/steamcmd:latest = linux/amd64 only (pull warns platform mismatch).
+  #   Installs HLDS app 90 + i386 .so (cs.so, metamod.so, amxmodx_mm_i386.so,
+  #   reunion_mm_i386.so, rechecker_mm_i386.so) + amxxpc compile. Build under
+  #   qemu on ARM would be very slow/likely fail. Use x86_64 host. Default UDP 27015
+  #   remapped here to 55555. Passwords via ./cs16.env (czero#123).
+  # cs16-marcel:
+  #   build: https://github.com/marceloeatworld/cs16.git
+  #   platform: linux/amd64 # x86-only, same ARM note as above
+  #   container_name: cs16-marcel
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./cs16.env
+  #   environment:
+  #     RCON_PASSWORD: "${RCON_PASSWORD:-czero#123}"
+  #     SV_PASSWORD: "${SV_PASSWORD:-czero#123}"
+  #     TZ: "UTC"
+  #     CS16_CPUS: "2.0"
+  #     CS16_MEMORY: "1g"
+  #   ports:
+  #     - "55555:55555/udp"
+  #     - "55555:55555/tcp"
+  #   volumes:
+  #     - /home/ubuntu/my_data/cs16/marcel:/hlds/cstrike
+
+  # WEB CS from vs4vijay/playground counter-strike.docker-compose.yml (COMMENTED)
+  # Adapted: UDP 27018 -> 55555, hardcoded /home/wick/cs -> /home/ubuntu/my_data/cs16/web,
+  # ADMIN_PASSWORD/JOIN_PASSWORD -> RCON_PASSWORD/SV_PASSWORD (defaults czero#123).
+  # Run only one server at a time (same port 55555):
+  #   docker compose -f ~/cs16.docker-compose.yml up -d cs16-web
+  # STATUS 2026-09-13: image yohimik/cs-web-server-metpamx:latest NOT pullable
+  #   (pull access denied - repo removed/private). Could not try live. Unchanged
+  #   upstream file kept at ~/workspace/playground/counter-strike.docker-compose.yml.
+  #   If image returns, uncomment below + init service, set PUBLIC_IP env.
+  # cs16-web-init:
+  #   image: cm2network/steamcmd:latest
+  #   platform: linux/amd64 # x86-only (single-arch manifest, no arm64)
+  #   container_name: cs16-web-init
+  #   user: "0:0"
+  #   env_file:
+  #     - ./cs16.env
+  #   environment:
+  #     STEAM_APP_ID: "90"
+  #     STEAM_INSTALL_DIR: "/home/steam/cs"
+  #     ARCHIVE_NAME: "valve.zip"
+  #     FORCE_DOWNLOAD: "0"
+  #   volumes:
+  #     - /home/ubuntu/my_data/cs16/web-init:/output
+  #   restart: "no"
+  # cs16-web:
+  #   image: yohimik/cs-web-server-metpamx:latest
+  #   container_name: cs16-web
+  #   env_file:
+  #     - ./cs16.env
+  #   command:
+  #     - '+hostname Friends CS1.6 Web'
+  #     - '+map de_dust2'
+  #     - '+maxplayers 14'
+  #     - '+rcon_password ${RCON_PASSWORD:-czero#123}'
+  #     - '+sv_password ${SV_PASSWORD:-czero#123}'
+  #     - '+mp_timelimit 20'
+  #     - '+mp_roundtime 5'
+  #     - '+mp_freezetime 5'
+  #     - '+yb_name_prefix AI_'
+  #     - '+yb_quota 6'
+  #     - '+yb_quota_mode fill'
+  #     - '+yb_difficulty 1'
+  #     - '+yb_autovacate 1'
+  #     - '+yb_autovacate_keep_slots 2'
+  #     - '+yb_join_after_player 1'
+  #     - '+yb_kick_after_player_connect 1'
+  #   depends_on:
+  #     cs16-web-init:
+  #       condition: service_completed_successfully
+  #   ports:
+  #     - "55555:55555/udp"
+  #     - "55555:55555/tcp"
+  #   environment:
+  #     IP: "${PUBLIC_IP:-127.0.0.1}"
+  #     PORT: "55555"
+  #   volumes:
+  #     - /home/ubuntu/my_data/cs16/web-init/valve.zip:/xashds/public/valve.zip
+  #     - /home/ubuntu/my_data/cs16/web/yapb:/xashds/cstrike/addons/yapb
+  #     - /home/ubuntu/my_data/cs16/web/plugins.ini:/xashds/cstrike/addons/metamod/plugins.ini
+  #   restart: unless-stopped

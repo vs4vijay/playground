@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: droppoint
+      POSTGRES_HOST_AUTH_METHOD: trust # dev only: db port is bound to 127.0.0.1
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - ./db/schema.sql:/schema.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d droppoint"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  api:
+    image: postgrest/postgrest:v16.3
+    environment:
+      PGRST_DB_URI: postgres://authenticator@db:5432/droppoint
+      PGRST_DB_SCHEMAS: api
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_POOL: 5
+    ports:
+      - "127.0.0.1:1337:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
